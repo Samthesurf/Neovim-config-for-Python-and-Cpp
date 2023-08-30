@@ -1,6 +1,7 @@
 vim.o.splitbelow = true
 vim.o.splitright = true
 vim.o.incsearch = true
+vim.cmd[[set guifont="Jetbrainsmononl Nerd Font"\Code:h11]]
 vim.api.nvim_set_var('mapleader', ' ')
 vim.api.nvim_set_keymap('t','<Esc>','<C-\\><C-n>',{noremap = true})
 vim.o.completeopt = "menuone,noselect"
@@ -29,17 +30,13 @@ for option, value in pairs(powershell_options) do
 end
 
 require("lazy").setup{
-{
---"LunarVim/lvim-themes",
-
-},{
 { 'nvim-telescope/telescope.nvim',
 tag = '0.1.2', -- or , 
 branch = '0.1.x',
 dependencies = { 'nvim-lua/plenary.nvim' },
 
  }
-},{
+, {
 "nvim-treesitter/nvim-treesitter",
 run = ':TSUpdate'
 
@@ -136,6 +133,12 @@ config = function ()
 	require'alpha'.setup(require'alpha.themes.startify'.config)
 end },{
 'onsails/lspkind.nvim'
+},{
+ 'jose-elias-alvarez/null-ls.nvim'
+},{
+	'rcarriga/nvim-dap-ui'
+},{
+	'folke/neodev.nvim', opts = {}
 }
 }}
 
@@ -171,8 +174,25 @@ require('which-key').setup {
 }
 
 require('lint').linters_by_ft = {
-python = {'ruff'}
+python = {'ruff'};
+cpp = {'cpplint'};
 }
+vim.api.nvim_create_autocmd({ "BufWritePost" }, {
+	callback = function()
+	  require("lint").try_lint()
+	end,
+  })
+local null_ls = require("null-ls")
+
+null_ls.setup({
+	sources = {
+		 null_ls.builtins.diagnostics.ruff,
+		 null_ls.builtins.diagnostics.cpplint,
+	}
+})
+require("neodev").setup({
+	library = { plugins = {"nvim-dap-ui"}, types = true},
+})
 -- Enable powershell as your default shell
 -- vim.opt.shell = "pwsh.exe -NoLogo"
 -- vim.opt.shellcmdflag =
@@ -193,19 +213,18 @@ require("betterTerm").setup{
 ]])
 }
 local lspkind = require('lspkind')
-cmp.setup {
-	formatting = {
-	format = lspkind.cmp_format({
-	mode = 'symbol',-- show only symbol annotations 
-	maxwidth = 50, -- prevent the popup from showing more than provided characters (e.g 50 will not show more than 50 characters) 
-	ellipsis_char = '...', -- when popup menu exceed maxwidth, the truncated part would show ellipsis_char instead (must define maxwidth first) 
-	-- The function below will be called before any actual modifications from lspkind 
-	-- -- so that you can provide more controls on popup customization. (See [#30](https://github.com/onsails/lspkind-nvim/pull/30)) 
-	before = function (entry, vim_item) 
-	... 
-	return vim_item 
-	end 
-}) } }
+-- cmp.setup {
+-- 	formatting = {
+-- 	format = lspkind.cmp_format({
+-- 	mode = 'symbol',-- show only symbol annotations 
+-- 	maxwidth = 50, -- prevent the popup from showing more than provided characters (e.g 50 will not show more than 50 characters) 
+-- 	ellipsis_char = '...', -- when popup menu exceed maxwidth, the truncated part would show ellipsis_char instead (must define maxwidth first) 
+-- 	-- The function below will be called before any actual modifications from lspkind 
+-- 	-- -- so that you can provide more controls on popup customization. (See [#30](https://github.com/onsails/lspkind-nvim/pull/30)) 
+-- 	before = function (entry, vim_item)
+-- 	return vim_item
+-- 	end
+-- }) } }
 --require('fugitive').setup{}
 
 -- Define the key mappings
@@ -234,7 +253,7 @@ augroup exe_code
 augroup END
 ]])
 require("nvim-tree").setup {}
-  
+
 
 --require("evil_lualine.evil_lualine")
 vim.o.mouse = "a"
@@ -252,20 +271,20 @@ require'lspconfig'.ruff_lsp.setup{
   cmd = {'ruff-lsp.cmd'}
 }
 local nvim_lsp = require('lspconfig')
-nvim_lsp.cpptools.setup{
-  cmd = { "OpenDebugAD7.cmd", "--background-index" },
-  filetypes = { "c", "cpp" },
-  root_dir = require'lspconfig'.util.root_pattern(".git", "compile_commands.json"),
-  -- init_options = {
-  --   clangdFileStatus = true,
-  --   usePlaceholders = true,
-  --   completeUnimported = true,
-  --   semanticHighlighting = true
-  -- }
-}
-require('lspconfig').ccls.setup{
-	cmd = {"ccls"}
-}
+-- nvim_lsp.cpptools.setup{
+--   cmd = { "OpenDebugAD7.cmd", "--background-index" },
+--   filetypes = { "c", "cpp" },
+--   root_dir = require'lspconfig'.util.root_pattern(".git", "compile_commands.json"),
+--   -- init_options = {
+--   --   clangdFileStatus = true,
+--   --   usePlaceholders = true,
+--   --   completeUnimported = true,
+--   --   semanticHighlighting = true
+--   -- }
+--}
+-- require('lspconfig').ccls.setup{
+-- 	cmd = {"ccls"}
+-- }
 local cmp1 = require('cmp')
 cmp1.setup({sources = {name = 'nvim_lsp'}})
  require("lspconfig").lua_ls.setup{
@@ -336,6 +355,30 @@ vim.keymap.set("n", "<leader>xl", function() require("trouble").open("loclist") 
 vim.keymap.set("n", "gR", function() require("trouble").open("lsp_references") end)
 
 
---coc.nvim
---require("coc.nvim").setup{}
+-- Color for highlights
+local colors = { yellow = '#ECBE7B', cyan = '#008080', darkblue = '#081633', green = '#98be65', orange = '#FF8800', violet = '#a9a1e1', magenta = '#c678dd', blue = '#51afef', red = '#ec5f67' }
+local config = { options = { icons_enabled = true, theme = 'gruvbox', component_separators = {'', ''}, section_separators = {'', ''}, disabled_filetypes = {} }, 
+sections = { lualine_a = {'mode'}, lualine_b = {'filename'}, lualine_c = {}, lualine_x = {}, lualine_y = {'encoding', 'fileformat', 'filetype'}, lualine_z = {'branch'}, }, 
+inactive_sections = { lualine_a = {}, lualine_b = {}, lualine_c = {'filename'}, lualine_x = {'location'}, lualine_y = {}, lualine_z = {} }, 
+tabline = {}, 
+extensions = {} } -- Inserts a component in lualine_c at left section 
+local function ins_left(component)
+	table.insert(config.sections.lualine_c, component) 
+end -- Inserts a component in lualine_x ot right section 
+local function ins_right(component)
+	table.insert(config.sections.lualine_x, component) 
+end 
+ins_left {  'lsp_progress',  display_components = { 'lsp_client_name', { 'title', 'percentage', 'message' }},  -- With spinner  
+-- display_components = { 'lsp_client_name', 'spinner', { 'title', 'percentage', 'message' }}, 
+colors = {   percentage = colors.cyan,   title = colors.cyan,   message = colors.cyan,   spinner = colors.cyan,   lsp_client_name = colors.magenta,   use = true, 
+},  
+separators = {   component = ' ',   progress = ' | ',  
+message = { pre = '(', post = ')'},  
+percentage = { pre = '', post = '%% ' },   
+title = { pre = '', post = ': ' },  
+lsp_client_name = { pre = '[', post = ']' },   spinner = { pre = '', post = '' },  
+message = { commenced = 'In Progress', completed = 'Completed' },  }, 
+display_components = { 'lsp_client_name', 'spinner', { 'title', 'percentage', 'message' } },
+timer = { progress_enddelay = 500, spinner = 1000, lsp_client_name_enddelay = 1000 },  
+spinner_symbols = { '🌑 ', '🌒 ', '🌓 ', '🌔 ', '🌕 ', '🌖 ', '🌗 ', '🌘 ' }, }
 
