@@ -1,5 +1,6 @@
 vim.o.splitbelow = true
 vim.o.splitright = true
+
 vim.api.nvim_set_var('mapleader', ' ')
 vim.api.nvim_set_keymap('t','<Esc>','<C-\\><C-n>',{noremap = true})
 vim.o.completeopt = "menuone,noselect"
@@ -125,7 +126,7 @@ event = "VeryLazy",
 },{
   'RRethy/vim-illuminate'
 },{
-  "ibhagwan/fzf-lua"
+  "junegunn/fzf"
 },{
 'mfussenegger/nvim-dap'
 },{
@@ -144,7 +145,7 @@ require('treesitter-context').setup{}
 require('nvim-autopairs').setup{}
 require('Comment').setup{}
 require('git').setup{}
-require("fzf-lua").setup{}
+--require("fzf").setup{}
 require('dap-python').setup('~/AppData/Local/nvim-data/mason/packages/debugpy/venv/Scripts/python.exe')
 --which-key
 require('which-key').setup {
