@@ -12,13 +12,13 @@ vim.opt.relativenumber = true
 vim.api.nvim_set_var('mapleader', ' ')
 vim.api.nvim_set_keymap('t','<Esc>','<C-\\><C-n>',{noremap = true})
 vim.o.completeopt = "menuone,noselect"
-local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim" 
-if not vim.loop.fs_stat(lazypath) then 
+local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+if not vim.loop.fs_stat(lazypath) then
 vim.fn.system({ "git",
- "clone", 
-"--filter=blob:none", 
-"https://github.com/folke/lazy.nvim.git", 
-"--branch=stable", 
+ "clone",
+"--filter=blob:none",
+"https://github.com/folke/lazy.nvim.git",
+"--branch=stable",
 -- latest stable release 
 lazypath,} )
 end
@@ -30,7 +30,7 @@ local powershell_options = {
   shellpipe = "2>&1 | Out-File -Encoding UTF8 %s; exit $LastExitCode",
   shellquote = "",
   shellxquote = "",
-}		
+}
 
 for option, value in pairs(powershell_options) do
   vim.opt[option] = value
@@ -117,7 +117,8 @@ event = "VeryLazy",
 		"hrsh7th/cmp-cmdline",
 		"saadparwaiz1/cmp_luasnip",
 		"L3MON4D3/LuaSnip",
-		"rafamadriz/friendly-snippets"
+		"rafamadriz/friendly-snippets",
+		"hrsh7th/cmp-cmdline"
 }
 }, {
 "CRAG666/code_runner.nvim", config= true,
@@ -501,13 +502,30 @@ cmp.setup {
     native_menu = false,
   },
 }
+cmp.setup.cmdline(':',{
+				mapping = cmp.mapping.preset.cmdline(),
+				sources = cmp.config.sources({
+								{name = 'path'}
+				},{
+								{
+												name = 'cmdline',
+												option = {
+																ignore_cmds = {'Man','!'}
+												}
+								}
+				})
+})
+cmp.setup.cmdline('/',{
+				mapping = cmp.mapping.preset.cmdline(),
+				sources = {
+								{name = 'buffer'}
+				}})
 
-
-vim.keymap.set("n", "<leader>xx", function() require("trouble").open() end) 
-vim.keymap.set("n", "<leader>xw", function() require("trouble").open("workspace_diagnostics") end) 
-vim.keymap.set("n", "<leader>xd", function() require("trouble").open("document_diagnostics") end) 
-vim.keymap.set("n", "<leader>xq", function() require("trouble").open("quickfix") end) 
-vim.keymap.set("n", "<leader>xl", function() require("trouble").open("loclist") end) 
+vim.keymap.set("n", "<leader>xx", function() require("trouble").open() end)
+vim.keymap.set("n", "<leader>xw", function() require("trouble").open("workspace_diagnostics") end)
+vim.keymap.set("n", "<leader>xd", function() require("trouble").open("document_diagnostics") end)
+vim.keymap.set("n", "<leader>xq", function() require("trouble").open("quickfix") end)
+vim.keymap.set("n", "<leader>xl", function() require("trouble").open("loclist") end)
 vim.keymap.set("n", "gR", function() require("trouble").open("lsp_references") end)
 
 
