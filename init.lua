@@ -4,9 +4,11 @@ vim.o.incsearch = true
 vim.opt.hlsearch = true
 vim.opt.ignorecase = true
 vim.opt.tabstop = 2
+vim.opt.guifont = "Jetbrainsmononl:h10"
 if vim.g.neovide then
-  vim.cmd[[set guifont="Jetbrainsmononl Nerd Font"\Code:h11]]
+  vim.opt.guifont = "Jetbrainsmononl:h09"
 end
+vim.opt.relativenumber = true
 vim.api.nvim_set_var('mapleader', ' ')
 vim.api.nvim_set_keymap('t','<Esc>','<C-\\><C-n>',{noremap = true})
 vim.o.completeopt = "menuone,noselect"
@@ -22,7 +24,7 @@ lazypath,} )
 end
 vim.opt.rtp:prepend(lazypath)
 local powershell_options = {
-  shell = vim.fn.executable "pwsh.exe -NoLogo" == 1 and "pwsh.exe -NoLogo" or "powershell.exe -NoLogo",
+  shell = vim.fn.executable "pwsh.exe -NoLogo" == 1 and "pwsh.exe -NoLogo" or "pwsh.exe -NoLogo",
   shellcmdflag = "-NoLogo -NoProfile -ExecutionPolicy RemoteSigned -Command [Console]::InputEncoding=[Console]::OutputEncoding=[System.Text.Encoding]::UTF8;",
   shellredir = "-RedirectStandardOutput %s -NoNewWindow -Wait",
   shellpipe = "2>&1 | Out-File -Encoding UTF8 %s; exit $LastExitCode",
@@ -165,7 +167,23 @@ end },{
   },{
 "simrat39/inlay-hints.nvim"
 	},{
-    'nvim-pack/nvim-spectre'
+    --'nvim-pack/nvim-spectre'
+  },{
+    'iamcco/markdown-preview.nvim'
+  },{
+    "folke/noice.nvim",
+    event = "VeryLazy",
+    opts = {
+      -- add any options here
+    },
+    dependencies = {
+      -- if you lazy-load any plugin below, make sure to add proper `module="..."` entries
+      "MunifTanjim/nui.nvim",
+      -- OPTIONAL:
+      --   `nvim-notify` is only needed, if you want to use the notification view.
+      --   If not available, we use `mini` as the fallback
+      "rcarriga/nvim-notify",
+      }
   }
 }}
 
@@ -227,7 +245,6 @@ require('which-key').setup {
   }
 }
 require("inlay-hints").setup{}
-require('spectre').setup{}
 local null_ls = require("null-ls")
 
 null_ls.setup({
@@ -241,23 +258,37 @@ require("neodev").setup({
 	library = { plugins = {"nvim-dap-ui"}, types = true},
 })
 require("code_runner").setup{}
-require("betterTerm").setup{
-  vim.cmd([[
+-- require('persistence').setup{}
+require("betterTerm").setup{}
+vim.cmd([[
   augroup toggleterm
     autocmd!
     autocmd TermOpen * call settabvar(1, 'toggleterm_directory', expand('%:p:h'))
   augroup END
 ]])
-}
+require("noice").setup({
+  lsp = {
+    -- override markdown rendering so that **cmp** and other plugins use **Treesitter**
+    override = {
+      ["vim.lsp.util.convert_input_to_markdown_lines"] = true,
+      ["vim.lsp.util.stylize_markdown"] = true,
+      ["cmp.entry.get_documentation"] = true,
+    },
+  },
+  -- you can enable a preset for easier configuration
+  presets = {
+    bottom_search = true, -- use a classic bottom cmdline for search
+    command_palette = true, -- position the cmdline and popupmenu together
+    long_message_to_split = true, -- long messages will be sent to a split
+    inc_rename = false, -- enables an input dialog for inc-rename.nvim
+    lsp_doc_border = false, -- add a border to hover docs and signature help
+  },
+})
 
 vim.keymap.set("n", "<leader>/", "<cmd>lua require('Comment.api').toggle.linewise.current()<CR>", {noremap = true})
 vim.keymap.set("x", "<leader>/", "<esc><cmd>lua require('Comment.api').toggle.linewise(vim.fn.visualmode())<CR>", {noremap = true})
 vim.api.nvim_set_keymap("n", "<leader>ft", ":Telescope live_grep<CR>",{noremap = true})
 vim.keymap.set("n", "<C-m>", ":Mason<CR>", {noremap = true})
-vim.keymap.set('n', '<leader>S', '<cmd>lua require("spectre").toggle()<CR>', { desc = "Toggle Spectre" }) 
-vim.keymap.set('n', '<leader>sw', '<cmd>lua require("spectre").open_visual({select_word=true})<CR>', { desc = "Search current word" }) 
-vim.keymap.set('v', '<leader>sw', '<esc><cmd>lua require("spectre").open_visual()<CR>', { desc = "Search current word" }) 
-vim.keymap.set('n', '<leader>sp', '<cmd>lua require("spectre").open_file_search({select_word=true})<CR>', { desc = "Search on current file" })
 
 -- -require('fugitive').setup{}
 
