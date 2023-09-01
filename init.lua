@@ -162,6 +162,10 @@ end },{
 	}
   },{
 "JoosepAlviste/nvim-ts-context-commentstring"
+  },{
+"simrat39/inlay-hints.nvim"
+	},{
+    'nvim-pack/nvim-spectre'
   }
 }}
 
@@ -222,13 +226,15 @@ require('which-key').setup {
     }
   }
 }
-
+require("inlay-hints").setup{}
+require('spectre').setup{}
 local null_ls = require("null-ls")
 
 null_ls.setup({
 	sources = {
 		 null_ls.builtins.diagnostics.ruff,
 		 null_ls.builtins.diagnostics.cpplint,
+		 null_ls.builtins.formatting.black,
 	}
 })
 require("neodev").setup({
@@ -248,6 +254,10 @@ vim.keymap.set("n", "<leader>/", "<cmd>lua require('Comment.api').toggle.linewis
 vim.keymap.set("x", "<leader>/", "<esc><cmd>lua require('Comment.api').toggle.linewise(vim.fn.visualmode())<CR>", {noremap = true})
 vim.api.nvim_set_keymap("n", "<leader>ft", ":Telescope live_grep<CR>",{noremap = true})
 vim.keymap.set("n", "<C-m>", ":Mason<CR>", {noremap = true})
+vim.keymap.set('n', '<leader>S', '<cmd>lua require("spectre").toggle()<CR>', { desc = "Toggle Spectre" }) 
+vim.keymap.set('n', '<leader>sw', '<cmd>lua require("spectre").open_visual({select_word=true})<CR>', { desc = "Search current word" }) 
+vim.keymap.set('v', '<leader>sw', '<esc><cmd>lua require("spectre").open_visual()<CR>', { desc = "Search current word" }) 
+vim.keymap.set('n', '<leader>sp', '<cmd>lua require("spectre").open_file_search({select_word=true})<CR>', { desc = "Search on current file" })
 
 -- -require('fugitive').setup{}
 
