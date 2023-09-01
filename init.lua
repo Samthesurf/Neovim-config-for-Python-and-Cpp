@@ -3,7 +3,10 @@ vim.o.splitright = true
 vim.o.incsearch = true
 vim.opt.hlsearch = true
 vim.opt.ignorecase = true
-vim.cmd[[set guifont="Jetbrainsmononl Nerd Font"\Code:h11]]
+vim.opt.tabstop = 2
+if vim.g.neovide then
+  vim.cmd[[set guifont="Jetbrainsmononl Nerd Font"\Code:h11]]
+end
 vim.api.nvim_set_var('mapleader', ' ')
 vim.api.nvim_set_keymap('t','<Esc>','<C-\\><C-n>',{noremap = true})
 vim.o.completeopt = "menuone,noselect"
@@ -25,12 +28,21 @@ local powershell_options = {
   shellpipe = "2>&1 | Out-File -Encoding UTF8 %s; exit $LastExitCode",
   shellquote = "",
   shellxquote = "",
-}
+}		
 
 for option, value in pairs(powershell_options) do
   vim.opt[option] = value
 end
-
+vim.g.clipboard = {
+  copy = {
+    ["+"] = "win32yank.exe -i --crlf",
+    ["*"] = "win32yank.exe -i --crlf",
+  },
+  paste = {
+    ["+"] = "win32yank.exe -o --lf",
+    ["*"] = "win32yank.exe -o --lf",
+  },
+}
 require("lazy").setup{
 { 'nvim-telescope/telescope.nvim',
 tag = '0.1.2', -- or , 
@@ -231,20 +243,13 @@ require("betterTerm").setup{
   augroup END
 ]])
 }
-local lspkind = require('lspkind')
--- cmp.setup {
--- 	formatting = {
--- 	format = lspkind.cmp_format({
--- 	mode = 'symbol',-- show only symbol annotations 
--- 	maxwidth = 50, -- prevent the popup from showing more than provided characters (e.g 50 will not show more than 50 characters) 
--- 	ellipsis_char = '...', -- when popup menu exceed maxwidth, the truncated part would show ellipsis_char instead (must define maxwidth first) 
--- 	-- The function below will be called before any actual modifications from lspkind 
--- 	-- -- so that you can provide more controls on popup customization. (See [#30](https://github.com/onsails/lspkind-nvim/pull/30)) 
--- 	before = function (entry, vim_item)
--- 	return vim_item
--- 	end
--- }) } }
---require('fugitive').setup{}
+
+vim.keymap.set("n", "<leader>/", "<cmd>lua require('Comment.api').toggle.linewise.current()<CR>", {noremap = true})
+vim.keymap.set("x", "<leader>/", "<esc><cmd>lua require('Comment.api').toggle.linewise(vim.fn.visualmode())<CR>", {noremap = true})
+vim.api.nvim_set_keymap("n", "<leader>ft", ":Telescope live_grep<CR>",{noremap = true})
+vim.keymap.set("n", "<C-m>", ":Mason<CR>", {noremap = true})
+
+-- -require('fugitive').setup{}
 
 -- Define the key mappings
 vim.api.nvim_set_keymap('n', '<A-1>', ':ToggleTerm direction=horizontal<CR>', { noremap = true, silent = true })
@@ -252,7 +257,7 @@ vim.api.nvim_set_keymap('n', '<A-2>', ':ToggleTerm direction=vertical<CR>', { no
 vim.api.nvim_set_keymap('n', '<A-3>', ':ToggleTerm direction=float<CR>', { noremap = true, silent = true })
 vim.api.nvim_set_keymap('i', '<C-s>', '<Esc>:w<CR>',{noremap = true, silent = true })
 vim.api.nvim_set_keymap('n', '<C-s>', ':w<CR>',{noremap = true, silent = true })
-vim.api.nvim_set_keymap('i', ';q', ':q<CR>',{noremap = true, silent = true })
+-- vim.api.nvim_set_keymap('i', ';q', ':q<CR>',{noremap = true, silent = true })
 vim.api.nvim_set_keymap('i', '<C-2>', '<Esc>:bnext<CR>',{noremap = true, silent = true })
 vim.api.nvim_set_keymap('n', '<C-2>', ':bnext<CR>',{noremap = true, silent = true })
 vim.api.nvim_set_keymap('i', '<C-1>', '<Esc>:bprevious<CR>',{noremap = true, silent = true })
@@ -310,7 +315,7 @@ cmp1.setup({sources = {name = 'nvim_lsp'}})
 }
 -- C:\Users\ukpsa\AppData\Roaming\lunarvim\lvim\lua\lvim\plugins.lua to install stuff
 -- Neovim config for PowerShell Editor Services
-require'lspconfig'.powershell.setup{
+require'lspconfig'.powershell_es.setup{
   cmd = { "pwsh", "-NoLogo", "-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass", "-Command", "EditorServices.StartEditorServices()" },
   filetypes = { "powershell" },
 }
