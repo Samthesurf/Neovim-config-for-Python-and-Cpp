@@ -12,6 +12,8 @@ vim.opt.relativenumber = true
 vim.api.nvim_set_var('mapleader', ' ')
 vim.api.nvim_set_keymap('t','<Esc>','<C-\\><C-n>',{noremap = true})
 vim.o.completeopt = "menuone,noselect"
+vim.opt.cursorline = true
+vim.opt.ignorecase = true
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
 vim.fn.system({ "git",
@@ -95,7 +97,7 @@ event = "VeryLazy",
  keys = {
  { "s", mode = { "n", "x", "o" }, function() require("flash").jump() end, desc = "Flash" },
  { "S", mode = { "n", "o", "x" }, function() require("flash").treesitter() end, desc = "Flash Treesitter" },
- { "r", mode = "o", function() require("flash").remote() end, desc = "Remote Flash" }, 
+ { "r", mode = "o", function() require("flash").remote() end, desc = "Remote Flash" },
 { "R", mode = { "o", "x" }, function() require("flash").treesitter_search() end, desc = "Treesitter Search" }, { "<c-s>", mode = { "c" }, function() require("flash").toggle() end, desc = "Toggle Flash Search" },
 },{
 "akinsho/bufferline.nvim",version = "*", dependencies = "nvim-tree/nvim-web-devicons"
@@ -135,7 +137,7 @@ event = "VeryLazy",
 },{
   'nvim-lualine/lualine.nvim', requires = {'nvim-tree/nvim-web-devicons'}, opt = true
 },{
-  'arkav/lualine-lsp-progress'
+   'folke/zen-mode.nvim'
 },{
   'dinhhuy258/git.nvim'
 },{
@@ -146,8 +148,8 @@ event = "VeryLazy",
 'mfussenegger/nvim-dap'
 },{
   'mfussenegger/nvim-dap-python'
-},{ 'goolord/alpha-nvim', dependencies = { 'nvim-tree/nvim-web-devicons' }, 
-config = function () 
+},{ 'goolord/alpha-nvim', dependencies = { 'nvim-tree/nvim-web-devicons' },
+config = function ()
 	require'alpha'.setup(require'alpha.themes.startify'.config)
 end },{
 'onsails/lspkind.nvim'
@@ -185,14 +187,15 @@ end },{
       --   If not available, we use `mini` as the fallback
       "rcarriga/nvim-notify",
       }
-  }
+  },{
+					"folke/twilight.nvim"
+	}
 }}
 
 }require("nvim-treesitter").setup{}
 require("telescope").setup{}
 require("mason").setup{}
 require("mason-lspconfig").setup{}
-require('lualine').setup{sections = {lualine_c = {'lsp-progress'}}}
 require('gitsigns').setup{}
 --require('wlsample.evil_line')
 require('treesitter-context').setup{}
@@ -224,7 +227,34 @@ require('Comment').setup{
     end
     }
 
+local function lspinfo()
+  local msg = 'No Active Lsp'
+  local buf_ft = vim.api.nvim_buf_get_option(0,'filetype')
+  local clients = vim.lsp.get_active_clients()
+  if next(clients) == nil then return msg end
+  local active_clients = {}
+  for _,client in ipairs(clients) do
+    local filetypes = client.config.filetypes
+    if filetypes and vim.fn.index(filetypes,buf_ft) ~= -1 then
+      table.insert(active_clients, client.name)
+    end
+  end
+  if #active_clients > 0 then
+    return table.concat(active_clients, ', ')
+  else
+    return msg
+  end
+end
 
+local lspinfo_component = {
+  function()
+    return lspinfo()
+  end,
+  icon = ' LSP:',
+  color = {fg = '#87ceeb', gui = 'bold'}
+    }
+require('lualine').setup{sections = {lualine_c = {'filename'},lualine_x={lspinfo_component,'encoding','fileformat','filetype'}}
+}
 require('git').setup{}
 --require("fzf").setup{}
 require('dap-python').setup('~/AppData/Local/nvim-data/mason/packages/debugpy/venv/Scripts/python.exe')
@@ -286,10 +316,15 @@ require("noice").setup({
   },
 })
 
-vim.keymap.set("n", "<leader>/", "<cmd>lua require('Comment.api').toggle.linewise.current()<CR>", {noremap = true})
-vim.keymap.set("x", "<leader>/", "<esc><cmd>lua require('Comment.api').toggle.linewise(vim.fn.visualmode())<CR>", {noremap = true})
+vim.keymap.set("n", "<leader>/", "<cmd>lua require('Comment.api').toggle.linewise.current()<CR>", {noremap = true}, {desc = 'Comment line'})
+vim.keymap.set("x", "<leader>/", "<esc><cmd>lua require('Comment.api').toggle.linewise(vim.fn.visualmode())<CR>", {noremap = true}, {desc = 'Comment line'})
 vim.api.nvim_set_keymap("n", "<leader>ft", ":Telescope live_grep<CR>",{noremap = true})
 vim.keymap.set("n", "<C-m>", ":Mason<CR>", {noremap = true})
+vim.api.nvim_set_keymap("n", "<leader>cl", ":LspInfo<cr>", {desc = "Lsp Info" })
+-- vim.api.nvim_set_keymap("n",  "K", vim.lsp.buf.hover, {desc = "Hover" })
+vim.api.nvim_set_keymap("n",  "<leader>bb", "<cmd>e #<cr>", { desc = "Switch to Other Buffer" })
+vim.keymap.set("n","<leader>S", ":BufferLineCyclePrev<cr>", { desc = "Prev buffer" })
+vim.keymap.set("n","<leader>s", ":BufferLineCycleNext<cr>", { desc = "Next buffer" })
 
 -- -require('fugitive').setup{}
 
