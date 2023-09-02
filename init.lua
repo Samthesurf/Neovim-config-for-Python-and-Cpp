@@ -189,6 +189,8 @@ end },{
       }
   },{
 					"folke/twilight.nvim"
+	},{
+    "petertriho/nvim-scrollbar"
 	}
 }}
 
@@ -226,6 +228,19 @@ require('Comment').setup{
       location = location,}
     end
     }
+		local colors = require("tokyonight.colors").setup()
+require("scrollbar").setup({
+				handle = {
+				color = "#b2beb5",
+},
+marks = {
+Search = { color = colors.orange },
+Error = { color = colors.error },
+Warn = { color = colors.warning },
+Info = { color = colors.info },
+Hint = { color = colors.hint },
+Misc = { color = colors.purple },
+} })
 
 local function lspinfo()
   local msg = 'No Active Lsp'
