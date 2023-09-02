@@ -4,6 +4,7 @@ vim.o.incsearch = true
 vim.opt.hlsearch = true
 vim.opt.ignorecase = true
 vim.opt.tabstop = 2
+vim.opt.expandtab = true
 vim.opt.guifont = "Jetbrainsmononl:h10"
 if vim.g.neovide then
   vim.opt.guifont = "Jetbrainsmononl:h09"
@@ -13,6 +14,7 @@ vim.api.nvim_set_var('mapleader', ' ')
 vim.api.nvim_set_keymap('t','<Esc>','<C-\\><C-n>',{noremap = true})
 vim.o.completeopt = "menuone,noselect"
 vim.opt.cursorline = true
+--vim.opt.cursorlinenr = "skyblue"
 vim.opt.ignorecase = true
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
@@ -59,11 +61,11 @@ dependencies = { 'nvim-lua/plenary.nvim' },
 run = ':TSUpdate'
 
 },{
-"sharkdp/fd"
+-- "sharkdp/fd"
 },{
 "nvim-tree/nvim-web-devicons"
 },{
-"BurntSushi/ripgrep"
+-- "BurntSushi/ripgrep"
 },{
 "folke/tokyonight.nvim",
 lazy = false,
@@ -152,7 +154,7 @@ event = "VeryLazy",
 config = function ()
 	require'alpha'.setup(require'alpha.themes.startify'.config)
 end },{
-'onsails/lspkind.nvim'
+-- 'onsails/lspkind.nvim'
 },{
  'jose-elias-alvarez/null-ls.nvim'
 },{
@@ -168,7 +170,7 @@ end },{
   },{
 "JoosepAlviste/nvim-ts-context-commentstring"
   },{
-"simrat39/inlay-hints.nvim"
+-- "simrat39/inlay-hints.nvim"
 	},{
     --'nvim-pack/nvim-spectre'
   },{
@@ -268,7 +270,13 @@ local lspinfo_component = {
   icon = ' LSP:',
   color = {fg = '#87ceeb', gui = 'bold'}
     }
-require('lualine').setup{sections = {lualine_c = {'filename'},lualine_x={lspinfo_component,'encoding','fileformat','filetype'}}
+require('lualine').setup{
+				options = {
+  section_separators = { left = '', right = '' },
+  component_separators = { left = '', right = '' }
+},
+				sections = {lualine_c = {'filename'},
+lualine_x={lspinfo_component,'encoding','fileformat','filetype'}}
 }
 require('git').setup{}
 --require("fzf").setup{}
@@ -290,7 +298,6 @@ require('which-key').setup {
     }
   }
 }
-require("inlay-hints").setup{}
 local null_ls = require("null-ls")
 
 null_ls.setup({
@@ -331,16 +338,16 @@ require("noice").setup({
   },
 })
 
-vim.keymap.set("n", "<leader>/", "<cmd>lua require('Comment.api').toggle.linewise.current()<CR>", {noremap = true}, {desc = 'Comment line'})
-vim.keymap.set("x", "<leader>/", "<esc><cmd>lua require('Comment.api').toggle.linewise(vim.fn.visualmode())<CR>", {noremap = true}, {desc = 'Comment line'})
+vim.keymap.set("n", "<leader>/", "<cmd>lua require('Comment.api').toggle.linewise.current()<CR>", {desc = 'Comment line'})
+vim.keymap.set("x", "<leader>/", "<esc><cmd>lua require('Comment.api').toggle.linewise(vim.fn.visualmode())<CR>", {desc = 'Comment line'})
 vim.api.nvim_set_keymap("n", "<leader>ft", ":Telescope live_grep<CR>",{noremap = true})
 vim.keymap.set("n", "<C-m>", ":Mason<CR>", {noremap = true})
 vim.api.nvim_set_keymap("n", "<leader>cl", ":LspInfo<cr>", {desc = "Lsp Info" })
--- vim.api.nvim_set_keymap("n",  "K", vim.lsp.buf.hover, {desc = "Hover" })
+vim.api.nvim_set_keymap("n",  "K", ":lua vim.lsp.buf.hover()<CR>", {desc = "Hover" })
 vim.api.nvim_set_keymap("n",  "<leader>bb", "<cmd>e #<cr>", { desc = "Switch to Other Buffer" })
 vim.keymap.set("n","<leader>S", ":BufferLineCyclePrev<cr>", { desc = "Prev buffer" })
 vim.keymap.set("n","<leader>s", ":BufferLineCycleNext<cr>", { desc = "Next buffer" })
-
+vim.api.nvim_set_keymap('n','<leader>k',':lua vim.lsp.buf.definition()<CR>',{desc = 'Show definition'})
 -- -require('fugitive').setup{}
 
 -- Define the key mappings
