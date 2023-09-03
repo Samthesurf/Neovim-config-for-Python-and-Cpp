@@ -362,7 +362,7 @@ vim.api.nvim_set_keymap('i', '<C-1>', '<Esc>:bprevious<CR>',{noremap = true, sil
 vim.api.nvim_set_keymap('n', '<C-1>', ':bprevious<CR>',{noremap = true, silent = true })
 vim.api.nvim_set_keymap('n','<leader>qa',':qall<CR>',{desc = "Close Neovim"})
 vim.api.nvim_set_keymap('n','<leader>of',':Telescope oldfiles<CR>',{desc = 'Recent Files'})
-
+vim.api.nvim_set_keymap('n','<leader>fz',':FZF<CR>',{desc = 'fzf'})
 --Running code lol
 vim.cmd([[
 augroup exe_code
