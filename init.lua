@@ -3,7 +3,10 @@ vim.o.splitright = true
 vim.o.incsearch = true
 vim.opt.hlsearch = true
 vim.opt.ignorecase = true
-vim.opt.tabstop = 2
+vim.opt.tabstop = 4
+vim.opt.softtabstop = 4
+vim.opt.shiftwidth = 4
+vim.opt.smartindent = true
 vim.opt.expandtab = true
 vim.opt.guifont = "Jetbrainsmononl:h10"
 if vim.g.neovide then
@@ -181,19 +184,18 @@ end },{
     opts = {
       -- add any options here
     },
-    dependencies = {
-      -- if you lazy-load any plugin below, make sure to add proper `module="..."` entries
-      "MunifTanjim/nui.nvim",
-      -- OPTIONAL:
-      --   `nvim-notify` is only needed, if you want to use the notification view.
-      --   If not available, we use `mini` as the fallback
-      "rcarriga/nvim-notify",
+   {
+        'catppuccin/nvim',name = 'catppuccin', priority = 1000
       }
   },{
 					"folke/twilight.nvim"
 	},{
     "petertriho/nvim-scrollbar"
-	}
+	},{
+    "MunifTanjim/nui.nvim",
+  },{
+    "rcarriga/nvim-notify",
+  }
 }}
 
 }require("nvim-treesitter").setup{}
@@ -303,7 +305,6 @@ local null_ls = require("null-ls")
 null_ls.setup({
 	sources = {
 		 null_ls.builtins.diagnostics.ruff,
-		 null_ls.builtins.diagnostics.cpplint,
 		 null_ls.builtins.formatting.black,
 	}
 })
@@ -348,7 +349,6 @@ vim.api.nvim_set_keymap("n",  "<leader>bb", "<cmd>e #<cr>", { desc = "Switch to 
 vim.keymap.set("n","<leader>S", ":BufferLineCyclePrev<cr>", { desc = "Prev buffer" })
 vim.keymap.set("n","<leader>s", ":BufferLineCycleNext<cr>", { desc = "Next buffer" })
 vim.api.nvim_set_keymap('n','<leader>k',':lua vim.lsp.buf.definition()<CR>',{desc = 'Show definition'})
--- -require('fugitive').setup{}
 
 -- Define the key mappings
 vim.api.nvim_set_keymap('n', '<A-1>', ':ToggleTerm direction=horizontal<CR>', { noremap = true, silent = true })
@@ -356,23 +356,23 @@ vim.api.nvim_set_keymap('n', '<A-2>', ':ToggleTerm direction=vertical<CR>', { no
 vim.api.nvim_set_keymap('n', '<A-3>', ':ToggleTerm direction=float<CR>', { noremap = true, silent = true })
 vim.api.nvim_set_keymap('i', '<C-s>', '<Esc>:w<CR>',{noremap = true, silent = true })
 vim.api.nvim_set_keymap('n', '<C-s>', ':w<CR>',{noremap = true, silent = true })
--- vim.api.nvim_set_keymap('i', ';q', ':q<CR>',{noremap = true, silent = true })
 vim.api.nvim_set_keymap('i', '<C-2>', '<Esc>:bnext<CR>',{noremap = true, silent = true })
 vim.api.nvim_set_keymap('n', '<C-2>', ':bnext<CR>',{noremap = true, silent = true })
 vim.api.nvim_set_keymap('i', '<C-1>', '<Esc>:bprevious<CR>',{noremap = true, silent = true })
 vim.api.nvim_set_keymap('n', '<C-1>', ':bprevious<CR>',{noremap = true, silent = true })
-
+vim.api.nvim_set_keymap('n','<leader>qa',':qall<CR>',{desc = "Close Neovim"})
+vim.api.nvim_set_keymap('n','<leader>of',':Telescope oldfiles<CR>',{desc = 'Recent Files'})
 
 --Running code lol
 vim.cmd([[
 augroup exe_code
     autocmd!
     autocmd FileType python noremap <buffer> <F5>
-    	\ :sp<CR> :term py %<CR> i
+    	\ :sp<CR>:term py %<CR> i
     autocmd FileType cpp noremap <buffer> <F5>
-    \ :sp<CR> :term g++ % -o %:r; ./%:r<CR> i
+    \ :sp<CR>:term g++ % -o %:r;./%:r<CR> i
     autocmd FileType c noremap <buffer> <F5>
-    \ :sp<CR> :term gcc % -o %:r; ./%:r<CR> i
+    \ :sp<CR>:term gcc % -o %:r;./%:r<CR> i
 augroup END
 ]])
 require("nvim-tree").setup {}
@@ -381,38 +381,39 @@ require("nvim-tree").setup {}
 --require("evil_lualine.evil_lualine")
 vim.o.mouse = "a"
 vim.opt.number = true
-vim.cmd[[colorscheme tokyonight]]
+require("catppuccin").setup{flavour = "mocha"}
+vim.cmd[[colorscheme catppuccin]]
 vim.opt.termguicolors = true
 require("bufferline").setup{}
 
 
 -- Languages
 
-require'lspconfig'.pyright.setup{}
-require'lspconfig'.ruff_lsp.setup{
-  cmd = {'ruff-lsp.cmd'}
+require'lspconfig'.pyright.setup{
+  python ={
+    analysis ={
+      diagnosticMode = "openFilesonly",
+      typeCheckingMode = "basic",
+    }
+  }
 }
+-- require'lspconfig'.pylyzer.setup{}
 local nvim_lsp = require('lspconfig')
--- nvim_lsp.cpptools.setup{
---   cmd = { "OpenDebugAD7.cmd", "--background-index" },
---   filetypes = { "c", "cpp" },
---   root_dir = require'lspconfig'.util.root_pattern(".git", "compile_commands.json"),
---   -- init_options = {
---   --   clangdFileStatus = true,
---   --   usePlaceholders = true,
---   --   completeUnimported = true,
---   --   semanticHighlighting = true
---   -- }
---}
--- require('lspconfig').ccls.setup{
--- 	cmd = {"ccls"}
--- }
+nvim_lsp.clangd.setup{
+  cmd = { "clangd", "--background-index" },
+  filetypes = { "c", "cpp" },
+  root_dir = require'lspconfig'.util.root_pattern(".git", "compile_commands.json"),
+}
+
 local cmp1 = require('cmp')
 cmp1.setup({sources = {name = 'nvim_lsp'}})
  require("lspconfig").lua_ls.setup{
-  cmd = {"lua-language-server.cmd" or "sunmeko.lua"}
+  cmd = {"lua-language-server.cmd" or "sunmeko.lua"},{
+      diagnostics = {
+          neededFileStatus = "Opened!"
+      }
+  }
 }
--- C:\Users\ukpsa\AppData\Roaming\lunarvim\lvim\lua\lvim\plugins.lua to install stuff
 -- Neovim config for PowerShell Editor Services
 require'lspconfig'.powershell_es.setup{
   cmd = { "pwsh", "-NoLogo", "-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass", "-Command", "EditorServices.StartEditorServices()" },
@@ -425,7 +426,7 @@ require("lspconfig").gopls.setup{
 }
 
 vim.api.nvim_set_keymap('n', '<leader>e', ':NvimTreeToggle<CR>', { noremap = true, silent = true })
-vim.api.nvim_set_keymap('n', '<A-r>', ':RunCode<CR>', {noremap = true, silent = true })
+vim.api.nvim_set_keymap('n', '<A-r>', ':RunCode<CR>i', {noremap = true, silent = true })
 
 --nvim-cmp
 local cmp_status_ok, cmp = pcall(require, "cmp")
