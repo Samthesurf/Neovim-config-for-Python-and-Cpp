@@ -179,7 +179,7 @@ end },{
   },{
     'iamcco/markdown-preview.nvim'
   },{
-    "folke/noice.nvim",
+   "folke/noice.nvim",
     event = "VeryLazy",
     opts = {
       -- add any options here
@@ -275,7 +275,8 @@ local lspinfo_component = {
 require('lualine').setup{
 				options = {
   section_separators = { left = '', right = '' },
-  component_separators = { left = '', right = '' }
+  component_separators = { left = '', right = '' },
+ disabled_filetypes = {'NvimTree'}
 },
 				sections = {lualine_c = {'filename'},
 lualine_x={lspinfo_component,'encoding','fileformat','filetype'}}
@@ -375,7 +376,13 @@ augroup exe_code
     \ :sp<CR>:term gcc % -o %:r;./%:r<CR> i
 augroup END
 ]])
-require("nvim-tree").setup {}
+require("nvim-tree").setup {
+    view ={
+        side = 'right',
+        show_header = true,
+        header_title = "Sam's Files",
+    }
+}
 
 
 --require("evil_lualine.evil_lualine")
@@ -386,14 +393,12 @@ vim.cmd[[colorscheme catppuccin]]
 vim.opt.termguicolors = true
 require("bufferline").setup{}
 
-
 -- Languages
-
 require'lspconfig'.pyright.setup{
   python ={
     analysis ={
       diagnosticMode = "openFilesonly",
-      typeCheckingMode = "basic",
+      typeCheckingMode = "Strict",
     }
   }
 }
@@ -425,7 +430,7 @@ require("lspconfig").gopls.setup{
   filetypes = {"go"},
 }
 
-vim.api.nvim_set_keymap('n', '<leader>e', ':NvimTreeToggle<CR>', { noremap = true, silent = true })
+vim.api.nvim_set_keymap('n', '<leader>e', ':NvimTreeFindFileToggle<CR>', { noremap = true, silent = true })
 vim.api.nvim_set_keymap('n', '<A-r>', ':RunCode<CR>i', {noremap = true, silent = true })
 
 --nvim-cmp
@@ -475,7 +480,6 @@ local kind_icons = {
 	Misc = " ",
 }
 -- find more here: https://www.nerdfonts.com/cheat-sheet
-
 cmp.setup {
   snippet = {
     expand = function(args)
@@ -578,14 +582,12 @@ cmp.setup.cmdline('/',{
 				sources = {
 								{name = 'buffer'}
 				}})
-
 vim.keymap.set("n", "<leader>xx", function() require("trouble").open() end)
 vim.keymap.set("n", "<leader>xw", function() require("trouble").open("workspace_diagnostics") end)
 vim.keymap.set("n", "<leader>xd", function() require("trouble").open("document_diagnostics") end)
 vim.keymap.set("n", "<leader>xq", function() require("trouble").open("quickfix") end)
 vim.keymap.set("n", "<leader>xl", function() require("trouble").open("loclist") end)
 vim.keymap.set("n", "gR", function() require("trouble").open("lsp_references") end)
-
 
 -- restore the session for the current directory
 vim.api.nvim_set_keymap("n", "<leader>qs", [[<cmd>lua require("persistence").load()<cr>]], {})
