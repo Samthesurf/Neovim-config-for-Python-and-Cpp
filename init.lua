@@ -371,9 +371,9 @@ augroup exe_code
     autocmd FileType python noremap <buffer> <F5>
     	\ :sp<CR>:term py %<CR> i
     autocmd FileType cpp noremap <buffer> <F5>
-    \ :sp<CR>:term g++ % -o %:r;./%:r<CR> i
+    \ :sp<CR>:term g++ % -o %:r;%:r<CR> i
     autocmd FileType c noremap <buffer> <F5>
-    \ :sp<CR>:term gcc % -o %:r;./%:r<CR> i
+    \ :sp<CR>:term gcc % -o %:r;%:r<CR> i
 augroup END
 ]])
 require("nvim-tree").setup {
@@ -388,7 +388,7 @@ require("nvim-tree").setup {
 --require("evil_lualine.evil_lualine")
 vim.o.mouse = "a"
 vim.opt.number = true
-require("catppuccin").setup{flavour = "mocha"}
+require("catppuccin").setup{flavour = "frappe"}
 vim.cmd[[colorscheme catppuccin]]
 vim.opt.termguicolors = true
 require("bufferline").setup{}
