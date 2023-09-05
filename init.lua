@@ -384,7 +384,7 @@ augroup exe_code
     autocmd FileType cpp noremap <buffer> <F5>
     \ :sp<CR>:term clang++ % -o %:r.exe;cmd /K %:r<CR> i
     autocmd FileType c noremap <buffer> <F5>
-    \ :sp<CR>:term clang % -o %:r;./%:r<CR> i
+    \ :sp<CR>:term clang % -o %:r;cmd /K %:r<CR> i
 augroup END
 ]])
 require("nvim-tree").setup {
