@@ -17,7 +17,6 @@ vim.api.nvim_set_var('mapleader', ' ')
 vim.api.nvim_set_keymap('t','<Esc>','<C-\\><C-n>',{noremap = true})
 vim.o.completeopt = "menuone,noselect"
 vim.opt.cursorline = true
---vim.opt.cursorlinenr = "skyblue"
 vim.opt.ignorecase = true
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
@@ -430,7 +429,11 @@ cmp1.setup({sources = {name = 'nvim_lsp'}})
  require("lspconfig").lua_ls.setup{
   cmd = {"lua-language-server.cmd" or "sunmeko.lua"},{
       diagnostics = {
-          neededFileStatus = "Opened!"
+           libraryFiles = "Disable"
+      },{
+    workspace = {
+    maxPreload = 2
+    }
       }
   }
 }
