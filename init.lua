@@ -93,7 +93,7 @@ opts = {},
 "folke/which-key.nvim"
 },
 {
-"folke/flash.nvim",
+"folke/flash.nvim", enabled = false,
 event = "VeryLazy",
  ---@type Flash.Config
  opts = {},
@@ -206,6 +206,8 @@ end },{
           "rebelot/kanagawa.nvim"
       },{
           "xiyaowong/transparent.nvim"
+      },{
+          "nvim-telescope/telescope-dap.nvim",enabled = false
       }
 }}
 
@@ -217,6 +219,7 @@ require('gitsigns').setup{}
 --require('wlsample.evil_line')
 require('treesitter-context').setup{}
 require('nvim-autopairs').setup{}
+-- require('telescope').load_extension('dap')
 require('Comment').setup{
     pre_hook = function(ctx)
     local U = require "Comment.utils"
@@ -255,7 +258,7 @@ Warn = { color = colors.warning },
 Info = { color = colors.info },
 Hint = { color = colors.hint },
 Misc = { color = colors.purple },
-} })
+} })  
 
 local function lspinfo()
   local msg = 'No Active Lsp'
@@ -374,6 +377,9 @@ vim.api.nvim_set_keymap('n','<leader>qa',':qall<CR>',{desc = "Close Neovim"})
 vim.api.nvim_set_keymap('n','<leader>of',':Telescope oldfiles<CR>',{desc = 'Recent Files'})
 vim.api.nvim_set_keymap('n','<leader>fz',':FZF<CR>',{desc = 'fzf'})
 vim.api.nvim_set_keymap('n','<leader>wa',':wqall<CR>',{desc = "Save and exit Neovim"})
+vim.api.nvim_set_keymap('n','<leader>tk',':Telescope keymaps<CR>',{desc = "Keymaps"})
+vim.api.nvim_set_keymap('n','<C-d>','<C-d>zz',{desc = "half page up"})
+vim.api.nvim_set_keymap('n','<C-u>','<C-u>zz',{desc = "half page down"})
 --Running code lol
 vim.cmd([[
 augroup exe_code
@@ -396,22 +402,28 @@ require("nvim-tree").setup {
 require("leap").add_default_mappings()
 
 --require("evil_lualine.evil_lualine")
-vim.o.mouse = "a"
+vim.o.mouse = ""
 vim.opt.number = true
 require("catppuccin").setup{flavour = "frappe"}
 vim.cmd[[colorscheme kanagawa-wave]]
 vim.opt.termguicolors = true
 require("bufferline").setup{}
 
--- Languages
-require'lspconfig'.pyright.setup{
-  python ={
-    analysis ={
-      diagnosticMode = "openFilesonly",
-      typeCheckingMode = "strict",
-    }
-  }
+require("lspconfig").pylsp.setup{
+    {plugins = 
+        {
+            jedi_completion = {
+                {eager = true},{
+                    fuzzy = true
+                },
+            },
+
+        },{
+            rope_completion = {enabled = true},{eager = true}
+        }
 }
+}
+
 -- require'lspconfig'.pylyzer.setup{}
 local ih = require("inlay-hints")
 local nvim_lsp = require('lspconfig')
@@ -609,10 +621,10 @@ vim.keymap.set("n", "<leader>xl", function() require("trouble").open("loclist") 
 vim.keymap.set("n", "gR", function() require("trouble").open("lsp_references") end,{desc = "references"})
 
 -- restore the session for the current directory
-vim.api.nvim_set_keymap("n", "<leader>qs", [[<cmd>lua require("persistence").load()<cr>]], {})
+vim.api.nvim_set_keymap("n", "<leader>qs", [[<cmd>lua require("persistence").load()<cr>]], {desc = "restore for dir"})
 
 -- restore the last session
-vim.api.nvim_set_keymap("n", "<leader>ql", [[<cmd>lua require("persistence").load({ last = true })<cr>]], {})
+vim.api.nvim_set_keymap("n", "<leader>ql", [[<cmd>lua require("persistence").load({ last = true })<cr>]], {desc = "restore last session"})
 
 -- stop Persistence => session won't be saved on exit
-vim.api.nvim_set_keymap("n", "<leader>qd", [[<cmd>lua require("persistence").stop()<cr>]], {})
+vim.api.nvim_set_keymap("n", "<leader>qd", [[<cmd>lua require("persistence").stop()<cr>]], {desc = "Don't save session"})
