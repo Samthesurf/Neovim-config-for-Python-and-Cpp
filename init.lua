@@ -8,6 +8,7 @@ vim.opt.softtabstop = 4
 vim.opt.shiftwidth = 4
 vim.opt.smartindent = true
 vim.opt.expandtab = true
+vim.opt.termguicolors = true
 vim.opt.guifont = "Jetbrainsmononl:h10"
 if vim.g.neovide then
     vim.opt.guifont = "Jetbrainsmononl:h09"
@@ -18,6 +19,7 @@ vim.api.nvim_set_keymap('t', '<Esc>', '<C-\\><C-n>', { noremap = true })
 vim.o.completeopt = "menuone,noselect"
 vim.opt.cursorline = true
 vim.opt.ignorecase = true
+vim.opt.clipboard:append("unnamedplus")
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
     vim.fn.system({ "git",
@@ -42,16 +44,6 @@ local powershell_options = {
 for option, value in pairs(powershell_options) do
     vim.opt[option] = value
 end
-vim.g.clipboard = {
-    copy = {
-        ["+"] = "win32yank.exe -i --crlf",
-        ["*"] = "win32yank.exe -i --crlf",
-    },
-    paste = {
-        ["+"] = "win32yank.exe -o --lf",
-        ["*"] = "win32yank.exe -o --lf",
-    },
-}
 require("lazy").setup {
     {
         'nvim-telescope/telescope.nvim',
@@ -386,13 +378,17 @@ require('which-key').setup {
     }
 }
 local null_ls = require("null-ls")
-
 null_ls.setup({
     sources = {
         null_ls.builtins.diagnostics.ruff,
+        null_ls.builtins.formatting.black,
     },
+    vim.cmd[[
+    autocmd BufWritePre *.py :lua vim.lsp.buf.format{timeout_ms = 12000}
+    ]]
 })
--- vim.g.transparent_enabled = true
+vim.g.transparent_enabled = true
+
 require("neodev").setup({
     library = { plugins = { "nvim-dap-ui" }, types = true },
 })
@@ -423,7 +419,9 @@ require("noice").setup({
         lsp_doc_border = false,   -- add a border to hover docs and signature help
     },
 })
-
+require("notify").setup{
+    background_color = "#000000",
+}
 vim.keymap.set("n", "<leader>/", "<cmd>lua require('Comment.api').toggle.linewise.current()<CR>", { desc = 'Comment line' })
 vim.keymap.set("x", "<leader>/", "<esc><cmd>lua require('Comment.api').toggle.linewise(vim.fn.visualmode())<CR>",
     { desc = 'Comment line' })
@@ -437,7 +435,7 @@ vim.keymap.set("n", "<leader>s", ":BufferLineCycleNext<cr>", { desc = "Next buff
 vim.api.nvim_set_keymap('n', '<leader>k', ':lua vim.lsp.buf.definition()<CR>', { desc = 'Show definition' })
 vim.keymap.set('n', '<leader>t', ':NvimTreeFocus<CR>', { desc = 'Jump to Tree' })
 vim.keymap.set('n', ':Q', ':q', { noremap = true })
-vim.api.nvim_set_keymap("n", "<leader>fd", ":lua vim.lsp.buf.format()<CR>", { desc = "Format" })
+vim.api.nvim_set_keymap("n", "<leader>fd", ":lua vim.lsp.buf.format{timeout_ms = 12000}<CR>", { desc = "Format" })
 vim.api.nvim_set_keymap("n", "p", "P", { noremap = true })
 vim.api.nvim_set_keymap("n", "yy", "_y$", { noremap = true })
 
@@ -480,7 +478,6 @@ vim.o.mouse = ""
 vim.opt.number = true
 require("catppuccin").setup { flavour = "mocha" }
 vim.cmd [[colorscheme catppuccin]]
-vim.opt.termguicolors = true
 require("bufferline").setup {}
 
 
@@ -680,21 +677,21 @@ cmp.setup.cmdline('/', {
         { name = 'buffer' }
     }
 })
-vim.keymap.set("n", "<leader>xx", function() require("trouble").open() end, { desc = "Trouble" })
-vim.keymap.set("n", "<leader>xw", function() require("trouble").open("workspace_diagnostics") end,
+vim.keymap.set("n", "<leader>tt", function() require("trouble").open() end, { desc = "Trouble" })
+vim.keymap.set("n", "<leader>tw", function() require("trouble").open("workspace_diagnostics") end,
     { desc = "workspace trouble" })
-vim.keymap.set("n", "<leader>xd", function() require("trouble").open("document_diagnostics") end,
+vim.keymap.set("n", "<leader>td", function() require("trouble").open("document_diagnostics") end,
     { desc = "document trouble" })
-vim.keymap.set("n", "<leader>xq", function() require("trouble").open("quickfix") end, { desc = "quickfix" })
-vim.keymap.set("n", "<leader>xl", function() require("trouble").open("loclist") end, { desc = "loclist" })
+vim.keymap.set("n", "<leader>tq", function() require("trouble").open("quickfix") end, { desc = "quickfix" })
+vim.keymap.set("n", "<leader>tl", function() require("trouble").open("loclist") end, { desc = "loclist" })
 vim.keymap.set("n", "gR", function() require("trouble").open("lsp_references") end, { desc = "references" })
 
 -- restore the session for the current directory
-vim.api.nvim_set_keymap("n", "<leader>qs", [[<cmd>lua require("persistence").load()<cr>]],
+vim.api.nvim_set_keymap("n", "<leader>ps", [[<cmd>lua require("persistence").load()<cr>]],
     { desc = "restore session for dir" })
 
 -- restore the last session
-vim.api.nvim_set_keymap("n", "<leader>ql", [[<cmd>lua require("persistence").load({ last = true })<cr>]],
+vim.api.nvim_set_keymap("n", "<leader>pl", [[<cmd>lua require("persistence").load({ last = true })<cr>]],
     { desc = "restore last session" })
 
 -- stop Persistence => session won't be saved on exit
