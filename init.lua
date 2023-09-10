@@ -18,6 +18,7 @@ vim.api.nvim_set_var('mapleader', ' ')
 vim.api.nvim_set_keymap('t', '<Esc>', '<C-\\><C-n>', { noremap = true })
 vim.o.completeopt = "menuone,noselect"
 vim.opt.cursorline = true
+vim.opt.smartcase = true
 vim.opt.ignorecase = true
 vim.opt.clipboard:append("unnamedplus")
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
@@ -346,6 +347,9 @@ local lspinfo_component = {
     icon = ' LSP:',
     color = { fg = '#87ceeb', gui = 'bold' }
 }
+local function surfer()
+    return [[SamuelSurf]]
+end
 require('lualine').setup {
     options = {
         section_separators = { left = '', right = '' },
@@ -354,7 +358,7 @@ require('lualine').setup {
     },
     sections = {
         lualine_c = { 'filename' },
-        lualine_x = { lspinfo_component, 'fileformat', 'filetype' }
+        lualine_x = { lspinfo_component, surfer, 'filetype' }
     }
 }
 require('git').setup {}
@@ -382,6 +386,7 @@ null_ls.setup({
     sources = {
         null_ls.builtins.diagnostics.ruff,
         null_ls.builtins.formatting.black,
+        null_ls.builtins.diagnostics.mypy,
     },
     vim.cmd[[
     autocmd BufWritePre *.py :lua vim.lsp.buf.format{timeout_ms = 12000}
@@ -474,10 +479,10 @@ require("nvim-tree").setup {
 require("leap").add_default_mappings()
 
 --require("evil_lualine.evil_lualine")
-vim.o.mouse = ""
+vim.o.mouse = "a"
 vim.opt.number = true
 require("catppuccin").setup { flavour = "mocha" }
-vim.cmd [[colorscheme catppuccin]]
+vim.cmd [[colorscheme kanagawa]]
 require("bufferline").setup {}
 
 
