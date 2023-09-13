@@ -1,3 +1,5 @@
+vim.g.loaded_netrw = 1
+vim.g.loaded_netrwPlugin = 1
 vim.o.splitbelow = true
 vim.o.splitright = true
 vim.o.incsearch = true
@@ -9,9 +11,9 @@ vim.opt.shiftwidth = 4
 vim.opt.smartindent = true
 vim.opt.expandtab = true
 vim.opt.termguicolors = true
-vim.opt.guifont = "Jetbrainsmononl:h10"
+vim.opt.guifont = "JetBrainsMono"
 if vim.g.neovide then
-    vim.opt.guifont = "Jetbrainsmononl:h09"
+    vim.opt.guifont = "JetbrainsMono"
 end
 vim.opt.relativenumber = true
 vim.api.nvim_set_var('mapleader', ' ')
@@ -92,20 +94,26 @@ require("lazy").setup {
         },
         {
             "folke/flash.nvim",
-            enabled = false,
+            -- enabled = false,
             event = "VeryLazy",
-            ---@type Flash.Config
+            -- -@type Flash.Config
             opts = {},
             -- stylua: ignore
             keys = {
-                { "s", mode = { "n", "x", "o" }, function() require("flash").jump() end,              desc = "Flash" },
-                { "S", mode = { "n", "o", "x" }, function() require("flash").treesitter() end,        desc =
-                "Flash Treesitter" },
-                { "r", mode = "o",               function() require("flash").remote() end,            desc =
-                "Remote Flash" },
-                { "R", mode = { "o", "x" },      function() require("flash").treesitter_search() end,
-                                                                                                          desc =
-                    "Treesitter Search" },
+                {
+                    "r",
+                    mode = "o",
+                    function() require("flash").remote() end,
+                    desc =
+                    "Remote Flash"
+                },
+                {
+                    "R",
+                    mode = { "o", "x" },
+                    function() require("flash").treesitter_search() end,
+                    desc =
+                    "Treesitter Search"
+                },
                 { "<c-s>", mode = { "c" }, function() require("flash").toggle() end, desc = "Toggle Flash Search" },
             },
             {
@@ -134,7 +142,6 @@ require("lazy").setup {
                     "saadparwaiz1/cmp_luasnip",
                     "L3MON4D3/LuaSnip",
                     "rafamadriz/friendly-snippets",
-                    "hrsh7th/cmp-cmdline"
                 }
             },
             {
@@ -144,7 +151,7 @@ require("lazy").setup {
                 "CRAG666/betterTerm.nvim"
             },
             {
-                -- 'tpope/vim-fugitive'
+                "tpope/vim-fugitive"
             },
             {
                 'windwp/nvim-autopairs', event = "InsertEnter", opts = {}
@@ -162,7 +169,7 @@ require("lazy").setup {
                 'folke/zen-mode.nvim'
             },
             {
-                'dinhhuy258/git.nvim'
+                -- 'dinhhuy258/git.nvim'
             },
             {
                 'RRethy/vim-illuminate'
@@ -206,13 +213,13 @@ require("lazy").setup {
                 "JoosepAlviste/nvim-ts-context-commentstring"
             },
             {
-                "simrat39/inlay-hints.nvim"
+                -- "simrat39/inlay-hints.nvim", enabled = false
             },
             {
                 --'nvim-pack/nvim-spectre'
             },
             {
-                'iamcco/markdown-preview.nvim'
+                'iamcco/markdown-preview.nvim', event = "VeryLazy"
             },
             {
                 "folke/noice.nvim",
@@ -225,7 +232,7 @@ require("lazy").setup {
                 }
             },
             {
-                "folke/twilight.nvim"
+                -- "folke/twilight.nvim"
             },
             {
                 "petertriho/nvim-scrollbar"
@@ -261,15 +268,19 @@ require("lazy").setup {
                 "natecraddock/workspaces.nvim"
             },
             {
+                "christoomey/vim-tmux-navigator"
+            },
+            {
+                "907th/vim-auto-save"
+            },
+            {
+                "stevearc/conform.nvim"
             }
         }
     }
 
 }
-require("nvim-treesitter.configs").setup {
-    highlight = {
-        enable = true
-    }
+require("nvim-treesitter.configs").setup { highlight = { enable = true }
 }
 require("telescope").setup {}
 require("mason").setup {}
@@ -320,7 +331,6 @@ require("scrollbar").setup({
         Misc = { color = colors.purple },
     }
 })
-
 local function lspinfo()
     local msg = 'No Active Lsp'
     local buf_ft = vim.api.nvim_buf_get_option(0, 'filetype')
@@ -361,7 +371,7 @@ require('lualine').setup {
         lualine_x = { lspinfo_component, surfer, 'filetype' }
     }
 }
-require('git').setup {}
+--require('git').setup {}
 --require("fzf").setup{}
 require('dap-python').setup('~/AppData/Local/nvim-data/mason/packages/debugpy/venv/Scripts/python.exe')
 --which-key
@@ -385,15 +395,22 @@ local null_ls = require("null-ls")
 null_ls.setup({
     sources = {
         null_ls.builtins.diagnostics.ruff,
-        null_ls.builtins.formatting.black,
-        null_ls.builtins.diagnostics.mypy,
+        -- null_ls.builtins.formatting.black,
+        -- null_ls.builtins.diagnostics.mypy,
     },
-    vim.cmd[[
-    autocmd BufWritePre *.py :lua vim.lsp.buf.format{timeout_ms = 12000}
-    ]]
 })
 vim.g.transparent_enabled = true
-
+require("conform").setup {
+    formatters_by_ft = {
+        python = { "black" }
+    },
+    format_on_save = {
+        timeout_ms = 12000,
+        lsp_fallback = true,
+    }
+}
+-- Format Python files on save
+vim.cmd [[au BufWritePre *.py require("conform").format{}]]
 require("neodev").setup({
     library = { plugins = { "nvim-dap-ui" }, types = true },
 })
@@ -417,17 +434,18 @@ require("noice").setup({
     },
     -- you can enable a preset for easier configuration
     presets = {
-        bottom_search = true,     -- use a classic bottom cmdline for search
-        command_palette = true,   -- position the cmdline and popupmenu together
+        bottom_search = true,         -- use a classic bottom cmdline for search
+        command_palette = true,       -- position the cmdline and popupmenu together
         long_message_to_split = true, -- long messages will be sent to a split
-        inc_rename = false,       -- enables an input dialog for inc-rename.nvim
-        lsp_doc_border = false,   -- add a border to hover docs and signature help
+        inc_rename = false,           -- enables an input dialog for inc-rename.nvim
+        lsp_doc_border = false,       -- add a border to hover docs and signature help
     },
 })
-require("notify").setup{
-    background_color = "#000000",
+require("notify").setup {
+    background_color = "#000001",
 }
-vim.keymap.set("n", "<leader>/", "<cmd>lua require('Comment.api').toggle.linewise.current()<CR>", { desc = 'Comment line' })
+vim.keymap.set("n", "<leader>/", "<cmd>lua require('Comment.api').toggle.linewise.current()<CR>",
+    { desc = 'Comment line' })
 vim.keymap.set("x", "<leader>/", "<esc><cmd>lua require('Comment.api').toggle.linewise(vim.fn.visualmode())<CR>",
     { desc = 'Comment line' })
 vim.api.nvim_set_keymap("n", "<leader>ft", ":Telescope live_grep<CR>", { noremap = true })
@@ -466,19 +484,29 @@ augroup exe_code
     autocmd FileType cpp noremap <buffer> <F5>
     \ :sp<CR>:term clang++ % -o %:r.exe;cmd /K %:r<CR> i
     autocmd FileType c noremap <buffer> <F5>
-    \ :sp<CR>:term clang % -o %:r;cmd /K %:r<CR> i
+    \ :sp<CR>:term clang % -o %:r.exe;cmd /K %:r<CR> i
 augroup END
 ]])
 require("nvim-tree").setup {
     view = {
         side = 'right',
-        show_header = true,
+        number = true,
+        relativenumber = true,
+        -- show_header = true,
         -- header_title = "Sam's Files",
+    },
+    renderer = {
+        highlight_diagnostics = true,
+        highlight_git = true,
     }
 }
-require("leap").add_default_mappings()
-
+-- require("leap").add_default_mappings()
+vim.keymap.set('n', 's', function() require("flash").jump() end, { desc = "jump" })
+vim.keymap.set('n', 'S', function() require("flash").treesitter() end, { desc = "Flash Treesitter" })
+vim.keymap.set('n', '<bsc>', "i<bsc>")
 --require("evil_lualine.evil_lualine")
+vim.cmd [[let g:auto_save = 1]]
+vim.cmd [[let g:auto_save_silent = 1]]
 vim.o.mouse = "a"
 vim.opt.number = true
 require("catppuccin").setup { flavour = "mocha" }
@@ -488,18 +516,15 @@ require("bufferline").setup {}
 
 local nvim_lsp = require('lspconfig')
 nvim_lsp.jedi_language_server.setup {}
-
+nvim_lsp.jsonls.setup {}
 
 
 -- require'lspconfig'.pylyzer.setup{}
-local ih = require("inlay-hints")
+-- local ih = require("inlay-hints")
 nvim_lsp.clangd.setup {
     cmd = { "clangd", "--clang-tidy" },
     filetypes = { "c", "cpp" },
     root_dir = require 'lspconfig'.util.root_pattern(".git", "compile_commands.json"),
-    on_attach = function(client, bufnr)
-        ih.on_attach(client, bufnr)
-    end,
 }
 
 local cmp1 = require('cmp')
@@ -700,4 +725,5 @@ vim.api.nvim_set_keymap("n", "<leader>pl", [[<cmd>lua require("persistence").loa
     { desc = "restore last session" })
 
 -- stop Persistence => session won't be saved on exit
-vim.api.nvim_set_keymap("n", "<leader>qd", [[<cmd>lua require("persistence").stop()<cr>]], { desc = "Don't save session" })
+vim.api.nvim_set_keymap("n", "<leader>qd", [[<cmd>lua require("persistence").stop()<cr>]],
+    { desc = "Don't save session" })
