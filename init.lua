@@ -11,9 +11,12 @@ vim.opt.shiftwidth = 4
 vim.opt.smartindent = true
 vim.opt.expandtab = true
 vim.opt.termguicolors = true
-vim.opt.guifont = "JetBrainsMono"
+vim.opt.guifont = "JetBrains Mono:h10"
 if vim.g.neovide then
-    vim.opt.guifont = "JetbrainsMono"
+    vim.opt.guifont = "Jetbrains Mono:h10"
+    vim.g.neovide_transparency = 0.95
+    vim.g.neovide_background_color = "#1f528f"
+    vim.cmd [[au BufReadPre * :TransparentToggle]]
 end
 vim.opt.relativenumber = true
 vim.api.nvim_set_var('mapleader', ' ')
@@ -223,6 +226,7 @@ require("lazy").setup {
             },
             {
                 "folke/noice.nvim",
+                enabled = false,
                 event = "VeryLazy",
                 opts = {
                     -- add any options here
@@ -238,16 +242,16 @@ require("lazy").setup {
                 "petertriho/nvim-scrollbar"
             },
             {
-                "MunifTanjim/nui.nvim",
+                "MunifTanjim/nui.nvim", enabled = false,
             },
             {
-                "rcarriga/nvim-notify",
+                "rcarriga/nvim-notify", enabled = false
             },
             {
-                "ggandor/leap.nvim", dependencies = { "tpope/vim-repeat" }
+                -- "ggandor/leap.nvim", dependencies = { "tpope/vim-repeat" }
             },
             {
-                "tpope/vim-repeat"
+                -- "tpope/vim-repeat"
             },
             {
                 "EdenEast/nightfox.nvim"
@@ -271,16 +275,28 @@ require("lazy").setup {
                 "christoomey/vim-tmux-navigator"
             },
             {
-                "907th/vim-auto-save"
+                "907th/vim-auto-save", enabled = false
             },
             {
                 "stevearc/conform.nvim"
+            },
+            { "dense-analysis/ale", enabled = false },
+            {
+                "utilyre/barbecue.nvim",
+                name = "barbecue",
+                version = "*",
+                dependencies = { "SmiteshP/nvim-navic", "nvim-tree/nvim-web-devicons", },
+                opts = {},
             }
         }
     }
 
 }
-require("nvim-treesitter.configs").setup { highlight = { enable = true }
+vim.keymap.set('n', '', ':w<CR>', { desc = "trying auto save" })
+vim.keymap.set('i', '', ':w<CR>', { desc = "trying auto save" })
+require("nvim-treesitter.configs").setup {
+    auto_install = true,
+    highlight = { enable = true }
 }
 require("telescope").setup {}
 require("mason").setup {}
@@ -330,6 +346,52 @@ require("scrollbar").setup({
         Hint = { color = colors.hint },
         Misc = { color = colors.purple },
     }
+})
+require("barbecue").setup({
+    theme = {
+        -- this highlight is used to override other highlights
+        -- you can take advantage of its bg and set a background throughout your winbar
+        -- (e.g. basename will look like this: { fg = "#c0caf5", bold = true })
+        normal = { fg = "#c0caf5" },
+
+        -- these highlights correspond to symbols table from config
+        ellipsis = { fg = "#737aa2" },
+        separator = { fg = "#737aa2" },
+        modified = { fg = "#737aa2" },
+
+        -- these highlights represent the _text_ of three main parts of barbecue
+        dirname = { fg = "#737aa2" },
+        basename = { bold = true },
+        context = {},
+
+        -- these highlights are used for context/navic icons
+        context_file = { fg = "#ac8fe4" },
+        context_module = { fg = "#ac8fe4" },
+        context_namespace = { fg = "#ac8fe4" },
+        context_package = { fg = "#ac8fe4" },
+        context_class = { fg = "#ac8fe4" },
+        context_method = { fg = "#ac8fe4" },
+        context_property = { fg = "#ac8fe4" },
+        context_field = { fg = "#ac8fe4" },
+        context_constructor = { fg = "#ac8fe4" },
+        context_enum = { fg = "#ac8fe4" },
+        context_interface = { fg = "#ac8fe4" },
+        context_function = { fg = "#ac8fe4" },
+        context_variable = { fg = "#ac8fe4" },
+        context_constant = { fg = "#ac8fe4" },
+        context_string = { fg = "#ac8fe4" },
+        context_number = { fg = "#ac8fe4" },
+        context_boolean = { fg = "#ac8fe4" },
+        context_array = { fg = "#ac8fe4" },
+        context_object = { fg = "#ac8fe4" },
+        context_key = { fg = "#ac8fe4" },
+        context_null = { fg = "#ac8fe4" },
+        context_enum_member = { fg = "#ac8fe4" },
+        context_struct = { fg = "#ac8fe4" },
+        context_event = { fg = "#ac8fe4" },
+        context_operator = { fg = "#ac8fe4" },
+        context_type_parameter = { fg = "#ac8fe4" },
+    },
 })
 local function lspinfo()
     local msg = 'No Active Lsp'
@@ -405,12 +467,12 @@ require("conform").setup {
         python = { "black" }
     },
     format_on_save = {
-        timeout_ms = 12000,
+        timeout_ms = 20000,
         lsp_fallback = true,
     }
 }
 -- Format Python files on save
-vim.cmd [[au BufWritePre *.py require("conform").format{}]]
+vim.cmd [[au BufWritePre *.py :lua require("conform").format{}]]
 require("neodev").setup({
     library = { plugins = { "nvim-dap-ui" }, types = true },
 })
@@ -423,27 +485,24 @@ vim.cmd([[
     autocmd TermOpen * call settabvar(1, 'toggleterm_directory', expand('%:p:h'))
   augroup END
 ]])
-require("noice").setup({
-    lsp = {
-        -- override markdown rendering so that **cmp** and other plugins use **Treesitter**
-        override = {
-            ["vim.lsp.util.convert_input_to_markdown_lines"] = true,
-            ["vim.lsp.util.stylize_markdown"] = true,
-            ["cmp.entry.get_documentation"] = true,
-        },
-    },
-    -- you can enable a preset for easier configuration
-    presets = {
-        bottom_search = true,         -- use a classic bottom cmdline for search
-        command_palette = true,       -- position the cmdline and popupmenu together
-        long_message_to_split = true, -- long messages will be sent to a split
-        inc_rename = false,           -- enables an input dialog for inc-rename.nvim
-        lsp_doc_border = false,       -- add a border to hover docs and signature help
-    },
-})
-require("notify").setup {
-    background_color = "#000001",
-}
+--require("noice").setup({
+--  lsp = {
+--    -- override markdown rendering so that **cmp** and other plugins use **Treesitter**
+--  override = {
+--    ["vim.lsp.util.convert_input_to_markdown_lines"] = true,
+--  ["vim.lsp.util.stylize_markdown"] = true,
+--["cmp.entry.get_documentation"] = true,
+--},
+--},
+-- you can enable a preset for easier configuration
+--presets = {
+--  bottom_search = true,         -- use a classic bottom cmdline for search
+--command_palette = true,       -- position the cmdline and popupmenu together
+--long_message_to_split = true, -- long messages will be sent to a split
+-- inc_rename = false,           -- enables an input dialog for inc-rename.nvim
+-- lsp_doc_border = false,       -- add a border to hover docs and signature help
+--},
+--})
 vim.keymap.set("n", "<leader>/", "<cmd>lua require('Comment.api').toggle.linewise.current()<CR>",
     { desc = 'Comment line' })
 vim.keymap.set("x", "<leader>/", "<esc><cmd>lua require('Comment.api').toggle.linewise(vim.fn.visualmode())<CR>",
