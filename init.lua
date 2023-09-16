@@ -13,7 +13,7 @@ vim.opt.expandtab = true
 vim.opt.termguicolors = true
 vim.opt.guifont = "JetBrainsMono Nerd Font:h10"
 if vim.g.neovide then
-    vim.opt.guifont = "JetBrainsMono Nerd Font:h10:Bold"
+    vim.opt.guifont = "JetBrainsMono Nerd Font:h10:b"
     vim.g.neovide_transparency = 0.95
     vim.g.neovide_background_color = "#1f528f"
     -- vim.cmd [[au BufReadPre * :TransparentToggle]]
@@ -291,7 +291,7 @@ require("lazy").setup {
         opts = {},
     },
     {
-        -- "debugloop/telescope-undo.nvim"
+        "johngrib/vim-game-snake",event = "VeryLazy"
     }
 }
 
@@ -526,6 +526,8 @@ vim.api.nvim_set_keymap("n", "p", "P", { noremap = true })
 vim.api.nvim_set_keymap("n", "yy", "_y$", { noremap = true })
 vim.api.nvim_set_keymap("n", "<leader>a", "gg0vG$", { desc = "highlight entire document" })
 vim.api.nvim_set_keymap("i", "<A><A>", "<C-c>", { desc = "Entering normal mode" })
+vim.api.nvim_set_keymap("n", "<leader>vs",":VimGameSnake<CR>",{desc = "Play Vim Snake"})
+vim.api.nvim_set_keymap("n","<leader>ss",":echo g:VimSnakeScore<CR>",{desc = "See Snake score"})
 
 -- Define the key mappings
 vim.api.nvim_set_keymap('n', '<A-1>', ':ToggleTerm direction=horizontal<CR>', { noremap = true, silent = true })
