@@ -11,12 +11,12 @@ vim.opt.shiftwidth = 4
 vim.opt.smartindent = true
 vim.opt.expandtab = true
 vim.opt.termguicolors = true
-vim.opt.guifont = "JetBrains Mono:h10"
+vim.opt.guifont = "JetBrainsMono Nerd Font:h10"
 if vim.g.neovide then
-    vim.opt.guifont = "Jetbrains Mono:h10"
+    vim.opt.guifont = "JetBrainsMono Nerd Font:h10:Bold"
     vim.g.neovide_transparency = 0.95
     vim.g.neovide_background_color = "#1f528f"
-    vim.cmd [[au BufReadPre * :TransparentToggle]]
+    -- vim.cmd [[au BufReadPre * :TransparentToggle]]
 end
 vim.opt.relativenumber = true
 vim.api.nvim_set_var('mapleader', ' ')
@@ -55,7 +55,7 @@ require("lazy").setup {
         'nvim-telescope/telescope.nvim',
         tag = '0.1.2', -- or ,
         branch = '0.1.x',
-        dependencies = { 'nvim-lua/plenary.nvim' },
+        dependencies = { 'nvim-lua/plenary.nvim',"debugloop/telescope-undo.nvim"},
 
     }
     , {
@@ -91,214 +91,218 @@ require("lazy").setup {
         lazy = false,
         dependencies = {
             "nvim-tree/nvim-web-devicons"
-        },
-        {
-            "folke/which-key.nvim"
-        },
-        {
-            "folke/flash.nvim",
-            -- enabled = false,
-            event = "VeryLazy",
-            -- -@type Flash.Config
-            opts = {},
-            -- stylua: ignore
-            keys = {
-                {
-                    "r",
-                    mode = "o",
-                    function() require("flash").remote() end,
-                    desc =
-                    "Remote Flash"
-                },
-                {
-                    "R",
-                    mode = { "o", "x" },
-                    function() require("flash").treesitter_search() end,
-                    desc =
-                    "Treesitter Search"
-                },
-                { "<c-s>", mode = { "c" }, function() require("flash").toggle() end, desc = "Toggle Flash Search" },
-            },
-            {
-                "akinsho/bufferline.nvim", version = "*", dependencies = "nvim-tree/nvim-web-devicons"
-            },
-            {
-                "williamboman/mason-lspconfig.nvim"
-            },
-            {
-                -- "windwp/windline.nvim"
-            },
-            {
-                "lewis6991/gitsigns.nvim"
-            },
-            {
-                --"neoclide/coc.nvim", branch = 'release',
-            },
-            {
-                "hrsh7th/nvim-cmp",
-                dependencies = {
-                    "hrsh7th/cmp-nvim-lsp",
-                    "hrsh7th/cmp-nvim-lua",
-                    "hrsh7th/cmp-buffer",
-                    "hrsh7th/cmp-path",
-                    "hrsh7th/cmp-cmdline",
-                    "saadparwaiz1/cmp_luasnip",
-                    "L3MON4D3/LuaSnip",
-                    "rafamadriz/friendly-snippets",
-                }
-            },
-            {
-                "CRAG666/code_runner.nvim", config = true,
-            },
-            {
-                "CRAG666/betterTerm.nvim"
-            },
-            {
-                "tpope/vim-fugitive"
-            },
-            {
-                'windwp/nvim-autopairs', event = "InsertEnter", opts = {}
-            },
-            {
-                'nvim-treesitter/nvim-treesitter-context'
-            },
-            {
-                'numToStr/Comment.nvim', opts = {}, lazy = false
-            },
-            {
-                'nvim-lualine/lualine.nvim', requires = { 'nvim-tree/nvim-web-devicons' }, opt = true
-            },
-            {
-                'folke/zen-mode.nvim'
-            },
-            {
-                -- 'dinhhuy258/git.nvim'
-            },
-            {
-                'RRethy/vim-illuminate'
-            },
-            {
-                "junegunn/fzf"
-            },
-            {
-                'mfussenegger/nvim-dap'
-            },
-            {
-                'mfussenegger/nvim-dap-python'
-            },
-            {
-                'goolord/alpha-nvim',
-                dependencies = { 'nvim-tree/nvim-web-devicons' },
-                config = function()
-                    require 'alpha'.setup(require 'alpha.themes.startify'.config)
-                end
-            },
-            {
-                -- 'onsails/lspkind.nvim'
-            },
-            {
-                'jose-elias-alvarez/null-ls.nvim'
-            },
-            {
-                'rcarriga/nvim-dap-ui'
-            },
-            {
-                'folke/neodev.nvim', opts = {}
-            },
-            {
-                "folke/persistence.nvim",
-                event = "BufReadPre", -- this will only start session saving when an actual file was opened
-                opts = {
-                    -- add any custom options here
-                }
-            },
-            {
-                "JoosepAlviste/nvim-ts-context-commentstring"
-            },
-            {
-                -- "simrat39/inlay-hints.nvim", enabled = false
-            },
-            {
-                --'nvim-pack/nvim-spectre'
-            },
-            {
-                'iamcco/markdown-preview.nvim', event = "VeryLazy"
-            },
-            {
-                "folke/noice.nvim",
-                enabled = false,
-                event = "VeryLazy",
-                opts = {
-                    -- add any options here
-                },
-                {
-                    'catppuccin/nvim', name = 'catppuccin', priority = 1000
-                }
-            },
-            {
-                -- "folke/twilight.nvim"
-            },
-            {
-                "petertriho/nvim-scrollbar"
-            },
-            {
-                "MunifTanjim/nui.nvim", enabled = false,
-            },
-            {
-                "rcarriga/nvim-notify", enabled = false
-            },
-            {
-                -- "ggandor/leap.nvim", dependencies = { "tpope/vim-repeat" }
-            },
-            {
-                -- "tpope/vim-repeat"
-            },
-            {
-                "EdenEast/nightfox.nvim"
-            },
-            {
-                "marko-cerovac/material.nvim", event = "VeryLazy"
-            },
-            {
-                "rebelot/kanagawa.nvim"
-            },
-            {
-                "xiyaowong/transparent.nvim"
-            },
-            {
-                "nvim-telescope/telescope-dap.nvim", enabled = false
-            },
-            {
-                "natecraddock/workspaces.nvim"
-            },
-            {
-                "christoomey/vim-tmux-navigator"
-            },
-            {
-                "907th/vim-auto-save", enabled = false
-            },
-            {
-                "stevearc/conform.nvim"
-            },
-            { "dense-analysis/ale", enabled = false },
-            {
-                "utilyre/barbecue.nvim",
-                name = "barbecue",
-                version = "*",
-                dependencies = { "SmiteshP/nvim-navic", "nvim-tree/nvim-web-devicons", },
-                opts = {},
-            }
         }
+    },
+    {
+        "folke/which-key.nvim"
+    },
+    {
+        "folke/flash.nvim",
+        -- enabled = false,
+        event = "VeryLazy",
+        -- -@type Flash.Config
+        opts = {},
+        -- stylua: ignore
+        keys = {
+            {
+                "r",
+                mode = "o",
+                function() require("flash").remote() end,
+                desc =
+                "Remote Flash"
+            },
+            {
+                "R",
+                mode = { "o", "x" },
+                function() require("flash").treesitter_search() end,
+                desc =
+                "Treesitter Search"
+            },
+            { "<c-s>", mode = { "c" }, function() require("flash").toggle() end, desc = "Toggle Flash Search" },
+        }
+    },
+    {
+        "akinsho/bufferline.nvim", version = "*", dependencies = "nvim-tree/nvim-web-devicons"
+    },
+    {
+        "williamboman/mason-lspconfig.nvim"
+    },
+    {
+        -- "windwp/windline.nvim"
+    },
+    {
+        "lewis6991/gitsigns.nvim"
+    },
+    {
+        --"neoclide/coc.nvim", branch = 'release',
+    },
+    {
+        "hrsh7th/nvim-cmp",
+        dependencies = {
+            "hrsh7th/cmp-nvim-lsp",
+            "hrsh7th/cmp-nvim-lua",
+            "hrsh7th/cmp-buffer",
+            "hrsh7th/cmp-path",
+            "hrsh7th/cmp-cmdline",
+            "saadparwaiz1/cmp_luasnip",
+            "L3MON4D3/LuaSnip",
+            "rafamadriz/friendly-snippets",
+        }
+    },
+    {
+        "CRAG666/code_runner.nvim", config = true,
+    },
+    {
+        "CRAG666/betterTerm.nvim"
+    },
+    {
+        "tpope/vim-fugitive"
+    },
+    {
+        'windwp/nvim-autopairs', event = "InsertEnter", opts = {}
+    },
+    {
+        'nvim-treesitter/nvim-treesitter-context'
+    },
+    {
+        'numToStr/Comment.nvim', opts = {}, lazy = false
+    },
+    {
+        'nvim-lualine/lualine.nvim', requires = { 'nvim-tree/nvim-web-devicons' }, opt = true
+    },
+    {
+        'folke/zen-mode.nvim'
+    },
+    {
+        -- 'dinhhuy258/git.nvim'
+    },
+    {
+        'RRethy/vim-illuminate'
+    },
+    {
+        "junegunn/fzf"
+    },
+    {
+        'mfussenegger/nvim-dap'
+    },
+    {
+        'mfussenegger/nvim-dap-python'
+    },
+    {
+        'goolord/alpha-nvim',
+        dependencies = { 'nvim-tree/nvim-web-devicons' },
+        config = function()
+            require 'alpha'.setup(require 'alpha.themes.startify'.config)
+        end
+    },
+    {
+        -- 'onsails/lspkind.nvim'
+    },
+    {
+        'jose-elias-alvarez/null-ls.nvim'
+    },
+    {
+        'rcarriga/nvim-dap-ui'
+    },
+    {
+        'folke/neodev.nvim', opts = {}
+    },
+    {
+        "folke/persistence.nvim",
+        event = "BufReadPre", -- this will only start session saving when an actual file was opened
+        opts = {
+            -- add any custom options here
+        }
+    },
+    {
+        "JoosepAlviste/nvim-ts-context-commentstring"
+    },
+    {
+        -- "simrat39/inlay-hints.nvim", enabled = false
+    },
+    {
+        --'nvim-pack/nvim-spectre'
+    },
+    {
+        'iamcco/markdown-preview.nvim', event = "VeryLazy"
+    },
+    {
+        "folke/noice.nvim",
+        enabled = false,
+        event = "VeryLazy",
+        opts = {
+            -- add any options here
+        },
+        {
+            'catppuccin/nvim', name = 'catppuccin', priority = 1000
+        }
+    },
+    {
+        -- "folke/twilight.nvim"
+    },
+    {
+        "petertriho/nvim-scrollbar"
+    },
+    {
+        "MunifTanjim/nui.nvim", enabled = false,
+    },
+    {
+        "rcarriga/nvim-notify", enabled = false
+    },
+    {
+        -- "ggandor/leap.nvim", dependencies = { "tpope/vim-repeat" }
+    },
+    {
+        -- "tpope/vim-repeat"
+    },
+    {
+        "EdenEast/nightfox.nvim"
+    },
+    {
+        "marko-cerovac/material.nvim", event = "VeryLazy"
+    },
+    {
+        "rebelot/kanagawa.nvim"
+    },
+    {
+        "xiyaowong/transparent.nvim"
+    },
+    {
+        "nvim-telescope/telescope-dap.nvim", enabled = false
+    },
+    {
+        "natecraddock/workspaces.nvim"
+    },
+    {
+        "christoomey/vim-tmux-navigator"
+    },
+    {
+        "907th/vim-auto-save",
+    },
+    {
+        "stevearc/conform.nvim"
+    },
+    { "dense-analysis/ale", enabled = false },
+    {
+        "utilyre/barbecue.nvim",
+        name = "barbecue",
+        version = "*",
+        dependencies = { "SmiteshP/nvim-navic", "nvim-tree/nvim-web-devicons", },
+        opts = {},
+    },
+    {
+        -- "debugloop/telescope-undo.nvim"
     }
-
 }
-vim.keymap.set('n', '', ':w<CR>', { desc = "trying auto save" })
-vim.keymap.set('i', '', ':w<CR>', { desc = "trying auto save" })
+
+-- vim.keymap.set('n', '<Esc>', '<Esc>:w<CR>', { desc = "trying auto save" })
+-- vim.keymap.set('i', '<Esc>', '<Esc>:w<CR>', { desc = "trying auto save" })
 require("nvim-treesitter.configs").setup {
     auto_install = true,
     highlight = { enable = true }
 }
 require("telescope").setup {}
+require("telescope").load_extension("undo")
 require("mason").setup {}
 require("mason-lspconfig").setup {}
 require('gitsigns').setup {}
@@ -468,7 +472,7 @@ require("conform").setup {
     },
     format_on_save = {
         timeout_ms = 20000,
-        lsp_fallback = true,
+        lsp_fallback = false,
     }
 }
 -- Format Python files on save
@@ -520,6 +524,8 @@ vim.keymap.set('n', ':Q', ':q', { noremap = true })
 vim.api.nvim_set_keymap("n", "<leader>fd", ":lua vim.lsp.buf.format{timeout_ms = 12000}<CR>", { desc = "Format" })
 vim.api.nvim_set_keymap("n", "p", "P", { noremap = true })
 vim.api.nvim_set_keymap("n", "yy", "_y$", { noremap = true })
+vim.api.nvim_set_keymap("n", "<leader>a", "gg0vG$", { desc = "highlight entire document" })
+vim.api.nvim_set_keymap("i", "<A><A>", "<C-c>", { desc = "Entering normal mode" })
 
 -- Define the key mappings
 vim.api.nvim_set_keymap('n', '<A-1>', ':ToggleTerm direction=horizontal<CR>', { noremap = true, silent = true })
@@ -613,8 +619,9 @@ require("lspconfig").gopls.setup {
 }
 
 vim.api.nvim_set_keymap('n', '<leader>e', ':NvimTreeFindFileToggle<CR>', { noremap = true, silent = true })
+-- <A means alt
 vim.api.nvim_set_keymap('n', '<A-r>', ':RunCode<CR>i', { noremap = true, silent = true })
-vim.api.nvim_set_keymap('n', '<leader>d', ':bw<CR>', { desc = "delete tab" })
+vim.api.nvim_set_keymap('n', '<leader>d', ':bw!<CR>', { desc = "delete tab" })
 
 --nvim-cmp
 local cmp_status_ok, cmp = pcall(require, "cmp")
@@ -683,7 +690,8 @@ cmp.setup {
         -- Accept currently selected item. If none selected, `select` first item.
         -- Set `select` to `false` to only confirm explicitly selected items.
         ["<CR>"] = cmp.mapping.confirm { select = true },
-        ["<Tab>"] = cmp.mapping(function(fallback)
+        ["<Tab>"] = cmp.mapping.confirm { select = true },
+        ["<Down>"] = cmp.mapping(function(fallback)
             if cmp.visible() then
                 cmp.select_next_item()
             elseif luasnip.expandable() then
@@ -699,7 +707,7 @@ cmp.setup {
             "i",
             "s",
         }),
-        ["<S-Tab>"] = cmp.mapping(function(fallback)
+        ["<Up>"] = cmp.mapping(function(fallback)
             if cmp.visible() then
                 cmp.select_prev_item()
             elseif luasnip.jumpable(-1) then
