@@ -16,11 +16,12 @@ if vim.g.neovide then
     vim.opt.guifont = "JetBrainsMono Nerd Font:h10:b"
     vim.g.neovide_transparency = 0.95
     vim.g.neovide_background_color = "#1f528f"
-    -- vim.cmd [[au BufReadPre * :TransparentToggle]]
+    -- vim.cmd [[au BufWritePre * :cd ~/Downloads]]
 end
 vim.opt.relativenumber = true
 vim.api.nvim_set_var('mapleader', ' ')
 vim.api.nvim_set_keymap('t', '<Esc>', '<C-\\><C-n>', { noremap = true })
+-- vim.api.nvim_set_keymap('n','x','_x',{desc = "delete without yanking"})
 vim.o.completeopt = "menuone,noselect"
 vim.opt.cursorline = true
 vim.opt.smartcase = true
@@ -280,7 +281,7 @@ require("lazy").setup {
         "907th/vim-auto-save",
     },
     {
-        "stevearc/conform.nvim"
+        -- "stevearc/conform.nvim"
     },
     { "dense-analysis/ale", enabled = false },
     {
@@ -466,17 +467,24 @@ null_ls.setup({
     },
 })
 vim.g.transparent_enabled = true
-require("conform").setup {
-    formatters_by_ft = {
-        python = { "black" }
-    },
-    format_on_save = {
-        timeout_ms = 20000,
-        lsp_fallback = false,
-    }
-}
+-- require("conform").setup {
+--     formatters_by_ft = {
+--         python = { "black" }
+--     },
+--     format_on_save = {
+--         timeout_ms = 20000,
+--         lsp_fallback = false,
+--     }
+-- }
 -- Format Python files on save
-vim.cmd [[au BufWritePre *.py :lua require("conform").format{}]]
+-- vim.cmd  [[au BufWritePre *.py silent !black %]]
+vim.cmd([[
+augroup format
+    autocmd!
+    autocmd FileType python noremap <buffer> <Esc>
+    	\ :silent !black %<CR>
+augroup END
+]])
 require("neodev").setup({
     library = { plugins = { "nvim-dap-ui" }, types = true },
 })
