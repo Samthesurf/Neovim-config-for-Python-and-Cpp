@@ -18,6 +18,8 @@ if vim.g.neovide then
     vim.g.neovide_background_color = "#1f528f"
     -- vim.cmd [[au BufWritePre * :cd ~/Downloads]]
 end
+-- on save current directory for the buffer becomes the directory for Neovim
+vim.cmd[[au BufWritePre * cd %:p:h]]
 vim.opt.relativenumber = true
 vim.api.nvim_set_var('mapleader', ' ')
 vim.api.nvim_set_keymap('t', '<Esc>', '<C-\\><C-n>', { noremap = true })
@@ -293,6 +295,8 @@ require("lazy").setup {
     },
     {
         "johngrib/vim-game-snake",event = "VeryLazy"
+    },{
+        "pwntester/octo.nvim",event = "VeryLazy"
     }
 }
 
@@ -536,7 +540,9 @@ vim.api.nvim_set_keymap("n", "<leader>a", "gg0vG$", { desc = "highlight entire d
 vim.api.nvim_set_keymap("i", "<A><A>", "<C-c>", { desc = "Entering normal mode" })
 vim.api.nvim_set_keymap("n", "<leader>vs",":VimGameSnake<CR>",{desc = "Play Vim Snake"})
 vim.api.nvim_set_keymap("n","<leader>ss",":echo g:VimSnakeScore<CR>",{desc = "See Snake score"})
-
+vim.keymap.set("n","<leader>ga",":G add .<CR>",{desc = "git add your changes", silent = true})
+vim.keymap.set("n","<leader>gc",":G commit<CR>",{desc = "add a commit message", })
+vim.keymap.set("n","<leader>gp",":G push<CR>",{desc = "Push changes to Github", })
 -- Define the key mappings
 vim.api.nvim_set_keymap('n', '<A-1>', ':ToggleTerm direction=horizontal<CR>', { noremap = true, silent = true })
 vim.api.nvim_set_keymap('n', '<A-2>', ':ToggleTerm direction=vertical<CR>', { noremap = true, silent = true })
