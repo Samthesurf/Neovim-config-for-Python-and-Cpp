@@ -554,7 +554,7 @@ vim.api.nvim_set_keymap("n", "<leader>a", "gg0vG$", { desc = "highlight entire d
 vim.api.nvim_set_keymap("n", "<leader>vs",":VimGameSnake<CR>",{desc = "Play Vim Snake"})
 vim.api.nvim_set_keymap("n","<leader>ss",":echo g:VimSnakeScore<CR>",{desc = "See Snake score"})
 vim.keymap.set("n","<leader>ga",":G add .<CR>",{desc = "git add your changes", silent = true})
-vim.keymap.set("n","<leader>gc",":G commit<CR>",{desc = "add a commit message", })
+vim.keymap.set("n","<leader>gc",":G commit<CR>i",{desc = "add a commit message", })
 vim.keymap.set("n","<leader>gp",":G push<CR>",{desc = "Push changes to Github", })
 -- Define the key mappings
 vim.api.nvim_set_keymap('n', '<A-1>', ':ToggleTerm direction=horizontal<CR>', { noremap = true, silent = true })
