@@ -11,18 +11,22 @@ vim.opt.shiftwidth = 4
 vim.opt.smartindent = true
 vim.opt.expandtab = true
 vim.opt.termguicolors = true
-vim.opt.guifont = "JetBrainsMono Nerd Font:h10"
+vim.opt.guifont = "JetBrainsMono Nerd Font:h10:b"
 if vim.g.neovide then
     vim.opt.guifont = "JetBrainsMono Nerd Font:h10:b"
     vim.g.neovide_transparency = 0.95
     vim.g.neovide_background_color = "#1f528f"
-    -- vim.cmd [[au BufWritePre * :cd ~/Downloads]]
 end
 -- on save current directory for the buffer becomes the directory for Neovim
 vim.cmd[[au BufWritePre * cd %:p:h]]
 vim.opt.relativenumber = true
 vim.api.nvim_set_var('mapleader', ' ')
 vim.api.nvim_set_keymap('t', '<Esc>', '<C-\\><C-n>', { noremap = true })
+-- Change diagnostic signs. 
+vim.fn.sign_define("DiagnosticSignError", { text ='❌' , texthl = "DiagnosticSignError" })
+vim.fn.sign_define("DiagnosticSignWarn", { text = '⚠️', texthl = "DiagnosticSignWarn" })
+vim.fn.sign_define("DiagnosticSignInfo", { text = 'ℹ️', texthl = "DiagnosticSignInfo" })
+vim.fn.sign_define("DiagnosticSignHint", { text = '', texthl = "DiagnosticSignHint" })
 -- vim.api.nvim_set_keymap('n','x','_x',{desc = "delete without yanking"})
 vim.o.completeopt = "menuone,noselect"
 vim.opt.cursorline = true
@@ -107,6 +111,9 @@ require("lazy").setup {
         opts = {},
         -- stylua: ignore
         keys = {
+            {
+               's', mode = {"n","o","x"},function() require("flash").jump() end, desc = "Jump"
+            },
             {
                 "r",
                 mode = "o",
@@ -202,7 +209,7 @@ require("lazy").setup {
         -- 'onsails/lspkind.nvim'
     },
     {
-        'jose-elias-alvarez/null-ls.nvim'
+        'jose-elias-alvarez/null-ls.nvim',event = "VeryLazy"
     },
     {
         'rcarriga/nvim-dap-ui'
@@ -297,6 +304,11 @@ require("lazy").setup {
         "johngrib/vim-game-snake",event = "VeryLazy"
     },{
         "pwntester/octo.nvim",event = "VeryLazy"
+    },{
+        "ThePrimeagen/refactoring.nvim",event = "VeryLazy"
+    },{
+        "theHamsta/nvim-dap-virtual-text", dependencies = {"mfussenegger/nvim-dap",
+        "nvim-treesitter/nvim-treesitter",}, event = "VeryLazy"
     }
 }
 
@@ -304,7 +316,8 @@ require("lazy").setup {
 -- vim.keymap.set('i', '<Esc>', '<Esc>:w<CR>', { desc = "trying auto save" })
 require("nvim-treesitter.configs").setup {
     auto_install = true,
-    highlight = { enable = true }
+    highlight = { enable = true },
+    ensure_installed = {"javascript","typescript","lua","c","cpp","rust","go","python","json","html","css","vim","toml"}
 }
 require("telescope").setup {}
 require("telescope").load_extension("undo")
@@ -465,7 +478,7 @@ require('which-key').setup {
 local null_ls = require("null-ls")
 null_ls.setup({
     sources = {
-        null_ls.builtins.diagnostics.ruff,
+        -- null_ls.builtins.diagnostics.ruff,
         -- null_ls.builtins.formatting.black,
         -- null_ls.builtins.diagnostics.mypy,
     },
@@ -531,13 +544,13 @@ vim.api.nvim_set_keymap("n", "<leader>bb", "<cmd>e #<cr>", { desc = "Switch to O
 vim.keymap.set("n", "<leader>S", ":BufferLineCyclePrev<cr>", { desc = "Prev buffer" })
 vim.keymap.set("n", "<leader>s", ":BufferLineCycleNext<cr>", { desc = "Next buffer" })
 vim.api.nvim_set_keymap('n', '<leader>k', ':lua vim.lsp.buf.definition()<CR>', { desc = 'Show definition' })
-vim.keymap.set('n', '<leader>t', ':NvimTreeFocus<CR>', { desc = 'Jump to Tree' })
+vim.keymap.set('n', '<leader>ca', ':lua vim.lsp.buf.code_action()<CR>', { desc = 'Jump to Tree' })
 vim.keymap.set('n', ':Q', ':q', { noremap = true })
 vim.api.nvim_set_keymap("n", "<leader>fd", ":lua vim.lsp.buf.format{timeout_ms = 12000}<CR>", { desc = "Format" })
 vim.api.nvim_set_keymap("n", "p", "P", { noremap = true })
-vim.api.nvim_set_keymap("n", "yy", "_y$", { noremap = true })
+vim.api.nvim_set_keymap("n", "yy", "0y$", { noremap = true })
 vim.api.nvim_set_keymap("n", "<leader>a", "gg0vG$", { desc = "highlight entire document" })
-vim.api.nvim_set_keymap("i", "<A><A>", "<C-c>", { desc = "Entering normal mode" })
+-- vim.api.nvim_set_keymap("i", "<A><A>", "<C-c>", { desc = "Entering normal mode" })
 vim.api.nvim_set_keymap("n", "<leader>vs",":VimGameSnake<CR>",{desc = "Play Vim Snake"})
 vim.api.nvim_set_keymap("n","<leader>ss",":echo g:VimSnakeScore<CR>",{desc = "See Snake score"})
 vim.keymap.set("n","<leader>ga",":G add .<CR>",{desc = "git add your changes", silent = true})
@@ -573,6 +586,7 @@ require("nvim-tree").setup {
         side = 'right',
         number = true,
         relativenumber = true,
+        width = 45,
         -- show_header = true,
         -- header_title = "Sam's Files",
     },
@@ -597,8 +611,16 @@ require("bufferline").setup {}
 
 local nvim_lsp = require('lspconfig')
 nvim_lsp.jedi_language_server.setup {}
+nvim_lsp.emmet_language_server.setup{}
 nvim_lsp.jsonls.setup {}
+nvim_lsp.ruff_lsp.setup {}
+--Enable (broadcasting) snippet capability for completion
+local capabilities = vim.lsp.protocol.make_client_capabilities()
+capabilities.textDocument.completion.completionItem.snippetSupport = true
 
+nvim_lsp.html.setup {
+  capabilities = capabilities,
+}
 
 -- require'lspconfig'.pylyzer.setup{}
 -- local ih = require("inlay-hints")
