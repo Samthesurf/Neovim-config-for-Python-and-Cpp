@@ -81,7 +81,13 @@ require("lazy").setup {
     priority = 1000,
     opts = {},
 }, {
-    "williamboman/mason.nvim"
+    "williamboman/mason.nvim",
+    opts = {
+        ensure_installed = {
+            "pyright","ruff","ruff-lsp","jedi-language-server","gopls","black","lua-language-server","debugpy","html-lsp",
+            "emmet-language-server","vale"
+        }
+    }
 }, {
     "neovim/nvim-lspconfig"
 }, {
@@ -544,7 +550,7 @@ vim.api.nvim_set_keymap("n", "<leader>bb", "<cmd>e #<cr>", { desc = "Switch to O
 vim.keymap.set("n", "<leader>S", ":BufferLineCyclePrev<cr>", { desc = "Prev buffer" })
 vim.keymap.set("n", "<leader>s", ":BufferLineCycleNext<cr>", { desc = "Next buffer" })
 vim.api.nvim_set_keymap('n', '<leader>k', ':lua vim.lsp.buf.definition()<CR>', { desc = 'Show definition' })
-vim.keymap.set('n', '<leader>ca', ':lua vim.lsp.buf.code_action()<CR>', { desc = 'Jump to Tree' })
+vim.keymap.set('n', '<leader>ca', ':lua vim.lsp.buf.code_action()<CR>', { desc = 'Code actions' })
 vim.keymap.set('n', ':Q', ':q', { noremap = true })
 vim.api.nvim_set_keymap("n", "<leader>fd", ":lua vim.lsp.buf.format{timeout_ms = 12000}<CR>", { desc = "Format" })
 vim.api.nvim_set_keymap("n", "p", "P", { noremap = true })
@@ -556,6 +562,10 @@ vim.api.nvim_set_keymap("n","<leader>ss",":echo g:VimSnakeScore<CR>",{desc = "Se
 vim.keymap.set("n","<leader>ga",":G add .<CR>",{desc = "git add your changes", silent = true})
 vim.keymap.set("n","<leader>gc",":G commit<CR>i",{desc = "add a commit message", })
 vim.keymap.set("n","<leader>gp",":G push<CR>",{desc = "Push changes to Github", })
+vim.keymap.set("n","<C-Left>","<C-w>>",{desc = "Increasing width"})
+vim.keymap.set("n","<C-Right>","<C-w><",{desc = "Decreasing width"})
+vim.keymap.set("n","<C-Up>","<C-w>+",{desc = "Increasing height"})
+vim.keymap.set("n","<C-Down>","<C-w>-",{desc = "Decreasing height"})
 -- Define the key mappings
 vim.api.nvim_set_keymap('n', '<A-1>', ':ToggleTerm direction=horizontal<CR>', { noremap = true, silent = true })
 vim.api.nvim_set_keymap('n', '<A-2>', ':ToggleTerm direction=vertical<CR>', { noremap = true, silent = true })
