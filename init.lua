@@ -1,5 +1,3 @@
-vim.g.loaded_netrw = 1
-vim.g.loaded_netrwPlugin = 1
 vim.o.splitbelow = true
 vim.o.splitright = true
 vim.o.incsearch = true
@@ -24,7 +22,7 @@ vim.api.nvim_set_var('mapleader', ' ')
 vim.api.nvim_set_keymap('t', '<Esc>', '<C-\\><C-n>', { noremap = true })
 -- Change diagnostic signs. 
 vim.fn.sign_define("DiagnosticSignError", { text ='❌' , texthl = "DiagnosticSignError" })
-vim.fn.sign_define("DiagnosticSignWarn", { text = '⚠️', texthl = "DiagnosticSignWarn" })
+vim.fn.sign_define("DiagnosticSignWarn", { text = '', texthl = "DiagnosticSignWarn" })
 vim.fn.sign_define("DiagnosticSignInfo", { text = 'ℹ️', texthl = "DiagnosticSignInfo" })
 vim.fn.sign_define("DiagnosticSignHint", { text = '', texthl = "DiagnosticSignHint" })
 -- vim.api.nvim_set_keymap('n','x','_x',{desc = "delete without yanking"})
@@ -99,10 +97,11 @@ require("lazy").setup {
     "akinsho/toggleterm.nvim", version = "*", config = true
 },
     {
-        "nvim-tree/nvim-tree.lua",
-        version = "*",
-        lazy = false,
+        "nvim-neo-tree/neo-tree.nvim",
+        branch = "v3.x",
         dependencies = {
+            "nvim-lua/plenary.nvim",
+            "MunifTanjim/nui.nvim",
             "nvim-tree/nvim-web-devicons"
         }
     },
@@ -243,15 +242,15 @@ require("lazy").setup {
         'iamcco/markdown-preview.nvim', event = "VeryLazy"
     },
     {
-        "folke/noice.nvim",
-        enabled = false,
-        event = "VeryLazy",
-        opts = {
+        -- "folke/noice.nvim",
+        -- enabled = false,
+        -- event = "VeryLazy",
+        -- opts = {
             -- add any options here
-        },
-        {
-            'catppuccin/nvim', name = 'catppuccin', priority = 1000
-        }
+        -- },
+    },
+    {
+        'catppuccin/nvim', name = 'catppuccin', priority = 1000
     },
     {
         -- "folke/twilight.nvim"
@@ -260,7 +259,7 @@ require("lazy").setup {
         "petertriho/nvim-scrollbar"
     },
     {
-        "MunifTanjim/nui.nvim", enabled = false,
+        -- "MunifTanjim/nui.nvim",
     },
     {
         "rcarriga/nvim-notify", enabled = false
@@ -454,10 +453,9 @@ require('lualine').setup {
     options = {
         section_separators = { left = '', right = '' },
         component_separators = { left = '', right = '' },
-        disabled_filetypes = { 'NvimTree' }
     },
     sections = {
-        lualine_c = { 'filename' },
+        lualine_c = { "filename",},
         lualine_x = { lspinfo_component, surfer, 'filetype' }
     }
 }
@@ -591,19 +589,38 @@ augroup exe_code
     \ :sp<CR>:term clang % -o %:r.exe;cmd /K %:r<CR> i
 augroup END
 ]])
-require("nvim-tree").setup {
-    view = {
-        side = 'right',
-        number = true,
-        relativenumber = true,
-        width = 45,
-        -- show_header = true,
-        -- header_title = "Sam's Files",
+require("neo-tree").setup {
+    enable_git_status = true,
+    enable_diagnostics = true,
+    buffers = {
+        follow_current_file = {
+            enabled = true,
+        },
     },
-    renderer = {
-        highlight_diagnostics = true,
-        highlight_git = true,
-    }
+    filesystem = {
+        filtered_items = {
+            visible = false,
+            hide_dotfiles = false,
+            hide_hidden = false,
+        },
+    },
+    config = {
+        sources = {
+            "document_symbols",
+        }
+    },
+    -- view = {
+    --     side = 'right',
+    --     number = true,
+    --     relativenumber = true,
+    --     width = 45,
+    --     -- show_header = true,
+    --     -- header_title = "Sam's Files",
+    -- },
+    -- renderer = {
+    --     highlight_diagnostics = true,
+    --     highlight_git = true,
+    -- }
 }
 -- require("leap").add_default_mappings()
 vim.keymap.set('n', 's', function() require("flash").jump() end, { desc = "jump" })
@@ -666,10 +683,12 @@ require("lspconfig").gopls.setup {
     filetypes = { "go" },
 }
 
-vim.api.nvim_set_keymap('n', '<leader>e', ':NvimTreeFindFileToggle<CR>', { noremap = true, silent = true })
+vim.api.nvim_set_keymap('n', '<leader>e', ':Neotree filesystem reveal right toggle<CR>', { desc = "file explorer", noremap = true, silent = true })
+vim.api.nvim_set_keymap('n', '<leader>eg', ':Neotree git_status toggle<CR>', { desc = "file git status",noremap = true, silent = true })
+vim.keymap.set("n","i","a")
 -- <A means alt
 vim.api.nvim_set_keymap('n', '<A-r>', ':RunCode<CR>i', { noremap = true, silent = true })
-vim.api.nvim_set_keymap('n', '<leader>d', ':bw!<CR>', { desc = "delete tab" })
+vim.api.nvim_set_keymap('n', '<leader>d', ':bw!<CR>', { desc = "delete tab", silent = true })
 
 --nvim-cmp
 local cmp_status_ok, cmp = pcall(require, "cmp")
